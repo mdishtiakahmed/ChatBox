@@ -7,7 +7,7 @@
   <!-- PeerJS লাইব্রেরি -->
   <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
   <style>
-    /* WhatsApp-এর মতো ডিজাইন */
+    /* Premium WhatsApp-সদৃশ ডিজাইন */
     body {
       margin: 0;
       padding: 0;
@@ -18,7 +18,7 @@
       max-width: 960px;
       margin: 0 auto;
       background-color: #fff;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
       display: flex;
       flex-direction: column;
       min-height: 100vh;
@@ -90,7 +90,7 @@
     .message {
       margin: 8px;
       padding: 10px 15px;
-      border-radius: 7.5px;
+      border-radius: 20px;
       max-width: 80%;
       word-wrap: break-word;
     }
@@ -107,55 +107,69 @@
       color: #888;
       font-size: 12px;
     }
-    /* ফ্লোটিং কল বাটন */
+    /* Floating call buttons */
+    .call-buttons {
+      position: fixed;
+      bottom: 80px;
+      right: 30px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      z-index: 10000;
+    }
     .call-btn {
       background-color: #25D366;
       color: #fff;
       border: none;
-      padding: 10px;
+      padding: 12px;
       border-radius: 50%;
-      width: 50px;
-      height: 50px;
-      font-size: 20px;
-      position: fixed;
-      bottom: 80px;
-      right: 30px;
+      width: 60px;
+      height: 60px;
+      font-size: 24px;
       box-shadow: 0 2px 4px rgba(0,0,0,0.3);
       cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
-    /* ভিডিও কলের মোডাল পপ-আপ */
+    .call-btn.audio {
+      background-color: #34B7F1;
+    }
+    /* Fullscreen Modal for Calls */
     .modal {
-      display: none; 
-      position: fixed; 
-      z-index: 9999; 
+      display: none;
+      position: fixed;
+      z-index: 11000;
       left: 0;
       top: 0;
       width: 100%;
       height: 100%;
-      overflow: auto; 
-      background-color: rgba(0,0,0,0.7);
+      background-color: rgba(0,0,0,0.85);
+      overflow: auto;
     }
     .modal-content {
-      background-color: #fff;
-      margin: 10% auto; 
-      padding: 20px;
-      border: 1px solid #888;
-      width: 90%;
-      max-width: 600px;
-      border-radius: 10px;
       position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
     }
     .close {
-      color: #aaa;
+      color: #fff;
       position: absolute;
-      right: 15px;
-      top: 15px;
-      font-size: 28px;
+      top: 20px;
+      right: 30px;
+      font-size: 40px;
       font-weight: bold;
       cursor: pointer;
+      z-index: 12000;
     }
     .video-container {
       position: relative;
+      width: 90%;
+      max-width: 900px;
       background: #000;
       border-radius: 8px;
       overflow: hidden;
@@ -169,7 +183,7 @@
       position: absolute;
       bottom: 10px;
       right: 10px;
-      width: 160px;
+      width: 200px;
       height: auto;
       border: 2px solid #fff;
       border-radius: 5px;
@@ -184,11 +198,11 @@
       background-color: #d9534f;
       color: #fff;
       border: none;
-      padding: 10px;
-      width: 100%;
+      padding: 12px;
+      width: 200px;
       border-radius: 5px;
-      font-size: 16px;
-      margin-top: 10px;
+      font-size: 18px;
+      margin-top: 20px;
       cursor: pointer;
     }
     .call-end-btn:hover {
@@ -229,20 +243,29 @@
     </div>
   </div>
 
-  <!-- ফ্লোটিং ভিডিও কল বাটন -->
-  <button id="startVideoCall" class="call-btn">&#128222;</button>
+  <!-- Floating Call Buttons -->
+  <div class="call-buttons">
+    <button id="startVideoCall" class="call-btn">&#128249;</button>
+    <button id="startAudioCall" class="call-btn audio">&#128222;</button>
+  </div>
 
-  <!-- ভিডিও কল মোডাল -->
-  <div id="videoModal" class="modal">
+  <!-- Fullscreen Modal for Calls -->
+  <div id="callModal" class="modal">
     <div class="modal-content">
       <span class="close" id="closeModal">&times;</span>
-      <div class="video-container">
+      <div class="video-container" id="videoContainer">
         <video id="remoteVideo" autoplay></video>
         <video id="localVideo" autoplay muted></video>
       </div>
-      <button id="stopVideo" class="call-end-btn">কল শেষ করুন</button>
+      <button id="stopCall" class="call-end-btn">কল শেষ করুন</button>
     </div>
   </div>
+
+  <!-- Audio element for ringtone -->
+  <audio id="ringtone" loop>
+    <source src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg" type="audio/ogg">
+    <source src="https://actions.google.com/sounds/v1/alarms/alarm_clock.mp3" type="audio/mpeg">
+  </audio>
 
   <script>
     // ------------------ Global Variables ------------------
@@ -252,6 +275,7 @@
     let dataConn;
     let localStream;
     let currentCall;
+    let callType = "video"; // বা "audio"
     let chatHistory = [];
 
     // DOM Elements
@@ -270,12 +294,14 @@
     const sendChatButton  = document.getElementById('sendChat');
 
     const startVideoCallButton = document.getElementById('startVideoCall');
-    const videoModal = document.getElementById('videoModal');
+    const startAudioCallButton = document.getElementById('startAudioCall');
+    const callModal = document.getElementById('callModal');
     const closeModal = document.getElementById('closeModal');
-    const stopVideoButton = document.getElementById('stopVideo');
+    const stopCallButton = document.getElementById('stopCall');
 
     const localVideo  = document.getElementById('localVideo');
     const remoteVideo = document.getElementById('remoteVideo');
+    const ringtone = document.getElementById('ringtone');
 
     // ------------------ Local Storage Functions ------------------
     function saveLoginInfo() {
@@ -307,23 +333,38 @@
       }
     }
 
-    // ------------------ Modal Functions ------------------
-    function openVideoModal() {
-      videoModal.style.display = "block";
+    // ------------------ Notification and Ringtone Functions ------------------
+    function showIncomingCallNotification(caller) {
+      if (Notification.permission === "granted") {
+        new Notification("ইনকামিং কল", {
+          body: caller + " কল করছেন।",
+          icon: "https://www.iconpacks.net/icons/2/free-phone-icon-3451-thumb.png"
+        });
+      }
     }
-    function closeVideoModal() {
-      videoModal.style.display = "none";
+    function playRingtone() {
+      ringtone.currentTime = 0;
+      ringtone.play().catch(e => console.log(e));
+    }
+    function stopRingtone() {
+      ringtone.pause();
+      ringtone.currentTime = 0;
+    }
+    // Request Notification permission on load
+    if (Notification.permission !== "granted") {
+      Notification.requestPermission();
+    }
+
+    // ------------------ Modal Functions ------------------
+    function openCallModal() {
+      callModal.style.display = "block";
+    }
+    function closeCallModal() {
+      callModal.style.display = "none";
     }
 
     closeModal.addEventListener('click', () => {
-      if(localStream){
-        localStream.getTracks().forEach(track => track.stop());
-        localStream = null;
-      }
-      if(currentCall){
-        currentCall.close();
-      }
-      closeVideoModal();
+      endCall();
     });
 
     // ------------------ PeerJS Initialization ------------------
@@ -343,23 +384,27 @@
       });
       peer.on('call', function(call) {
         currentCall = call;
-        if(localStream) {
-          call.answer(localStream);
-        } else {
-          navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+        // Incoming call: play ringtone and show notification
+        playRingtone();
+        showIncomingCallNotification(call.peer);
+        // 3 সেকেন্ড পরে কল গ্রহণের জন্য (ডিলে দিয়ে modal দেখাবে)
+        setTimeout(() => {
+          let constraints = (call.metadata && call.metadata.type === "audio") ? { audio: true } : { video: true, audio: true };
+          navigator.mediaDevices.getUserMedia(constraints)
             .then(function(stream){
               localStream = stream;
               localVideo.srcObject = stream;
               call.answer(stream);
+              openCallModal();
+              stopRingtone();
+              call.on('stream', function(remoteStream){
+                remoteVideo.srcObject = remoteStream;
+              });
             })
             .catch(function(err){
               console.error("মিডিয়া ডিভাইস এক্সেসে সমস্যা:", err);
             });
-        }
-        openVideoModal();
-        call.on('stream', function(remoteStream){
-          remoteVideo.srcObject = remoteStream;
-        });
+        }, 3000);
       });
     }
 
@@ -427,7 +472,7 @@
       appendChatMessage(username, msg, time, true);
       chatInput.value = '';
     }
-    function appendChatMessage(sender, message, time, save=true) {
+    function appendChatMessage(sender, message, time, saveMsg=true) {
       const msgDiv = document.createElement('div');
       msgDiv.classList.add('message');
       if(sender === username) {
@@ -440,21 +485,26 @@
       msgDiv.innerHTML = `<strong>${sender}</strong> (${time}):<br>${message}`;
       chatMessagesDiv.appendChild(msgDiv);
       chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
-      if(save) {
+      if(saveMsg) {
         chatHistory.push({ sender, text: message, time });
         saveChatHistory();
       }
     }
 
-    // ------------------ Video/Audio Call Functions ------------------
-    startVideoCallButton.addEventListener('click', function(){
-      navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+    // ------------------ Call Functions ------------------
+    function startCall(isVideo = true) {
+      callType = isVideo ? "video" : "audio";
+      let constraints = isVideo ? { video: true, audio: true } : { audio: true };
+      navigator.mediaDevices.getUserMedia(constraints)
         .then(function(stream){
           localStream = stream;
-          localVideo.srcObject = stream;
-          openVideoModal();
+          if(isVideo) {
+            localVideo.srcObject = stream;
+          }
+          openCallModal();
           if(userRole === 'account1'){
-            currentCall = peer.call("account2", stream);
+            // metadata দিয়ে কলের টাইপ পাঠানো
+            currentCall = peer.call("account2", stream, { metadata: { type: callType } });
             currentCall.on('stream', function(remoteStream){
               remoteVideo.srcObject = remoteStream;
             });
@@ -463,17 +513,28 @@
         .catch(function(err){
           console.error("মিডিয়া ডিভাইস এক্সেসে সমস্যা:", err);
         });
+    }
+
+    startVideoCallButton.addEventListener('click', function(){
+      startCall(true);
     });
-    stopVideoButton.addEventListener('click', function(){
+    startAudioCallButton.addEventListener('click', function(){
+      startCall(false);
+    });
+
+    function endCall() {
       if(localStream){
         localStream.getTracks().forEach(track => track.stop());
         localStream = null;
-        if(currentCall){
-          currentCall.close();
-        }
-        closeVideoModal();
       }
-    });
+      if(currentCall){
+        currentCall.close();
+      }
+      closeCallModal();
+      stopRingtone();
+    }
+
+    stopCallButton.addEventListener('click', endCall);
 
     // Auto-login if stored info exists
     if(loadLoginInfo()){
