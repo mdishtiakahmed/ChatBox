@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>লাইভ ভিডিও &amp; চ্যাট</title>
   <style>
-    /* Global Reset & Basic Styles */
+    /* === Global Reset & Basic Styles === */
     * {
       margin: 0;
       padding: 0;
@@ -21,7 +21,7 @@
       background-color: #1e1e1e;
       color: #ddd;
     }
-    /* Login Section */
+    /* === Login Section === */
     #loginSection {
       max-width: 400px;
       margin: 80px auto;
@@ -53,7 +53,7 @@
     #loginSection button:hover {
       background: #0a7a71;
     }
-    /* Main App Section */
+    /* === Main App Section === */
     #appSection {
       display: none;
       height: 100vh;
@@ -71,7 +71,7 @@
     header.header h1 {
       font-size: 20px;
     }
-    /* Profile Button & Popover */
+    /* === Profile Button & Popover === */
     .profile-btn {
       background: #fff;
       color: #075E54;
@@ -82,7 +82,6 @@
       font-weight: bold;
       position: relative;
     }
-    /* Profile Popover (opens near the button) */
     .profile-popover {
       display: none;
       position: absolute;
@@ -107,7 +106,8 @@
       font-size: 14px;
     }
     .profile-popover input[type="text"],
-    .profile-popover input[type="file"] {
+    .profile-popover input[type="file"],
+    .profile-popover input[type="password"] {
       width: 100%;
       padding: 6px;
       font-size: 14px;
@@ -122,8 +122,9 @@
       border-radius: 4px;
       cursor: pointer;
       font-size: 14px;
+      margin-top: 5px;
     }
-    /* Main Layout: Sidebar & Chat Area */
+    /* === Main Layout: Sidebar & Chat Area === */
     .main {
       flex: 1;
       display: flex;
@@ -159,8 +160,8 @@
       background: #d0f0d0;
     }
     aside.contacts li img {
-      width: 30px;
-      height: 30px;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
       margin-right: 10px;
       object-fit: cover;
@@ -175,7 +176,7 @@
       border-radius: 4px;
       cursor: pointer;
     }
-    /* Chat Section */
+    /* === Chat Section === */
     section.chat-section {
       flex: 1;
       display: flex;
@@ -246,7 +247,7 @@
       margin-left: 8px;
       margin-right: 0;
     }
-    /* Chat Input Area */
+    /* === Chat Input Area === */
     .chat-input-container {
       display: flex;
       padding: 8px;
@@ -280,7 +281,43 @@
       cursor: pointer;
       font-size: 14px;
     }
-    /* Fullscreen Modal for Calls */
+    /* === Incoming Call Modal (Receiver Side) === */
+    .incoming-call-modal {
+      display: none;
+      position: fixed;
+      z-index: 12000;
+      left: 50%;
+      top: 20%;
+      transform: translateX(-50%);
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 20px;
+      width: 300px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    }
+    .incoming-call-modal h3 {
+      margin-bottom: 15px;
+      text-align: center;
+    }
+    .incoming-call-modal button {
+      width: 45%;
+      padding: 8px;
+      margin: 0 5%;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .incoming-call-modal .accept {
+      background: #34B7F1;
+      color: #fff;
+    }
+    .incoming-call-modal .decline {
+      background: #d9534f;
+      color: #fff;
+    }
+    /* === Call Modal (Active Call) === */
     .modal {
       display: none;
       position: fixed;
@@ -311,27 +348,32 @@
       cursor: pointer;
       z-index: 12000;
     }
-    /* Video Container: Remote & Local arranged vertically */
+    /* Video Container: Remote video fills container; Local video small & floating */
     .video-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      position: relative;
       width: 90%;
       max-width: 900px;
       background: #000;
       border-radius: 8px;
       overflow: hidden;
     }
-    .video-container video {
-      width: 100%;
-      object-fit: cover;
-    }
     #remoteVideo {
-      max-height: 80vh;
+      width: 100%;
+      height: auto;
+      background: #000;
     }
     #localVideo {
-      max-height: 20vh;
-      margin-top: 10px;
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 150px;
+      height: auto;
+      border: 2px solid #fff;
+      border-radius: 4px;
+      z-index: 5;
+      cursor: move;
+      /* একটি হালকা শ্যাডো */
+      box-shadow: 0 2px 6px rgba(0,0,0,0.5);
     }
     .call-end-btn {
       margin-top: 20px;
@@ -343,9 +385,9 @@
       font-size: 18px;
       cursor: pointer;
     }
-    /* Media Queries */
+    /* === Mobile Adjustments === */
     @media (max-width: 600px) {
-      /* Sidebar becomes horizontal scrollable bar */
+      /* কন্টাক্ট লিস্টকে Messenger-এর মতো উপরের দিকে, গোল ছবি দিয়ে */
       aside.contacts {
         width: 100%;
         height: auto;
@@ -364,6 +406,12 @@
       aside.contacts li {
         flex: 0 0 auto;
         margin-right: 10px;
+        padding: 5px;
+      }
+      aside.contacts li img {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
       }
       header.header h1 {
         font-size: 18px;
@@ -372,7 +420,7 @@
         padding: 6px 10px;
       }
       #localVideo {
-        max-height: 25vh;
+        width: 120px;
       }
       .chat-input-container input[type="text"] {
         font-size: 14px;
@@ -382,6 +430,15 @@
         font-size: 12px;
         padding: 6px 8px;
       }
+    }
+    /* === Elegant Touch === */
+    /* সামান্য এনিমেশন ও শ্যাডো যোগ করা হয়েছে */
+    .profile-popover, .incoming-call-modal, .modal-content {
+      animation: fadeIn 0.3s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
@@ -407,16 +464,19 @@
   <div id="appSection" class="app-section">
     <header class="header">
       <h1>লাইভ ভিডিও &amp; চ্যাট</h1>
-      <!-- Profile Button (shows image if exists) -->
+      <!-- Profile Button: যদি প্রোফাইল ছবি থাকে, তা দেখাবে -->
       <button id="profileBtn" class="profile-btn" title="প্রোফাইল আপডেট করুন">PN</button>
-      <!-- Profile Popover (appears beside the button) -->
+      <!-- Profile Popover -->
       <div id="profilePopover" class="profile-popover">
         <h3>প্রোফাইল আপডেট</h3>
         <label for="tempName">সাময়িক নাম:</label>
         <input type="text" id="tempName" placeholder="নতুন নাম লিখুন">
         <label for="profilePic">প্রোফাইল পিকচার:</label>
         <input type="file" id="profilePic">
+        <label for="newPassword">নতুন পাসওয়ার্ড:</label>
+        <input type="password" id="newPassword" placeholder="পাসওয়ার্ড লিখুন">
         <button id="saveProfileBtn">সেভ করুন</button>
+        <button id="logoutBtn" style="margin-top:5px;background:#c9302c;">লগ আউট</button>
       </div>
     </header>
     <div class="main">
@@ -446,7 +506,16 @@
     </div>
   </div>
 
-  <!-- Fullscreen Modal for Calls -->
+  <!-- Incoming Call Modal (Receiver Side) -->
+  <div id="incomingCallModal" class="incoming-call-modal">
+    <h3>কল আসছে...</h3>
+    <div style="text-align: center;">
+      <button class="accept" id="acceptCallBtn">Call Receive</button>
+      <button class="decline" id="declineCallBtn">Call Decline</button>
+    </div>
+  </div>
+
+  <!-- Call Modal (Active Call) -->
   <div id="callModal" class="modal">
     <div class="modal-content">
       <span class="close" id="closeCallModal">&times;</span>
@@ -483,7 +552,9 @@
     const profilePopover = document.getElementById('profilePopover');
     const tempNameInput = document.getElementById('tempName');
     const profilePicInput = document.getElementById('profilePic');
+    const newPasswordInput = document.getElementById('newPassword');
     const saveProfileBtn = document.getElementById('saveProfileBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
 
     const contactListEl = document.getElementById('contactList');
     const createGroupBtn = document.getElementById('createGroupBtn');
@@ -504,6 +575,10 @@
     const localVideo = document.getElementById('localVideo');
     const remoteVideo = document.getElementById('remoteVideo');
 
+    const incomingCallModal = document.getElementById('incomingCallModal');
+    const acceptCallBtn = document.getElementById('acceptCallBtn');
+    const declineCallBtn = document.getElementById('declineCallBtn');
+
     /***** Utility Functions *****/
     function getConversationId(participants) {
       return participants.sort().join('_');
@@ -523,7 +598,6 @@
       const msgDiv = document.createElement('div');
       msgDiv.classList.add('message');
       let avatarHTML = "";
-      // যদি প্রোফাইল ছবি থাকে, তবে শুধুমাত্র ওই একাউন্টের জন্য দেখানো হবে
       if(msg.sender === username && profilePicData) {
         avatarHTML = `<img class="avatar" src="${profilePicData}" alt="Avatar">`;
       }
@@ -553,6 +627,24 @@
     function clearChatMessages() {
       chatMessagesEl.innerHTML = "";
     }
+    function showNotification(text) {
+      // একটি সহজ নোটিফিকেশন এলিমেন্ট তৈরি করে 2 সেকেন্ড পরে অটো হাইড করা হবে
+      const notif = document.createElement('div');
+      notif.style.position = "fixed";
+      notif.style.bottom = "20px";
+      notif.style.left = "50%";
+      notif.style.transform = "translateX(-50%)";
+      notif.style.background = "rgba(0,0,0,0.7)";
+      notif.style.color = "#fff";
+      notif.style.padding = "10px 20px";
+      notif.style.borderRadius = "20px";
+      notif.style.boxShadow = "0 2px 6px rgba(0,0,0,0.3)";
+      notif.textContent = text;
+      document.body.appendChild(notif);
+      setTimeout(() => {
+        notif.remove();
+      }, 2000);
+    }
     function toggleTheme() {
       document.body.classList.toggle('dark-theme');
     }
@@ -572,6 +664,21 @@
         profileBtn.textContent = "PN";
       }
     }
+    function saveLoginData() {
+      // লগইন সংক্রান্ত তথ্য সংরক্ষিত থাকবে যাতে পরবর্তীতে আবার লগইন করতে না হয়
+      localStorage.setItem('loggedIn', 'true');
+      localStorage.setItem('loggedAccount', userRole);
+    }
+    function autoLogin() {
+      const logged = localStorage.getItem('loggedIn');
+      const acc = localStorage.getItem('loggedAccount');
+      if(logged && acc) {
+        accountSelect.value = acc;
+        // নিজে থেকে লগইন করার জন্য (পাসওয়ার্ড আবার না চাইলে)
+        passwordInput.value = acc;
+        loginButton.click();
+      }
+    }
 
     /***** Login & PeerJS Initialization *****/
     loginButton.addEventListener('click', () => {
@@ -582,9 +689,9 @@
         return;
       }
       userRole = selectedAccount;
-      // লোগইন তথ্য (username, প্রোফাইল ছবি) account-specificভাবে লোড
       loadSavedProfile();
       if(!username) username = selectedAccount;
+      saveLoginData();
       peer = new Peer(userRole, { debug: 2 });
       peer.on('error', err => {
         if(err.type === 'unavailable-id'){
@@ -604,21 +711,8 @@
         setupConnection(conn);
       });
       peer.on('call', call => {
-        currentCall = call;
-        const constraints = (call.metadata && call.metadata.type === "audio") ? { audio: true } : { video: true, audio: true };
-        navigator.mediaDevices.getUserMedia(constraints)
-          .then(stream => {
-            localStream = stream;
-            localVideo.srcObject = stream;
-            call.answer(stream);
-            openCallModal();
-            call.on('stream', remoteStream => {
-              remoteVideo.srcObject = remoteStream;
-            });
-          })
-          .catch(err => {
-            console.error("মিডিয়া এক্সেস সমস্যাঃ", err);
-          });
+        // incoming call: show incoming call modal with accept/decline options
+        incomingCallHandler(call);
       });
     });
 
@@ -630,9 +724,15 @@
       conn.on('data', data => {
         try {
           const msgObj = JSON.parse(data);
-          // যদি কল শেষের সিগন্যাল পাওয়া যায়
           if(msgObj.type === "callEnded") {
+            // যদি কল শেষের সিগন্যাল পাওয়া যায়, তাহলে কল শেষ করুন
             endCall();
+            showNotification("Call Ended");
+            return;
+          }
+          if(msgObj.type === "callRequest") {
+            // এই সিগন্যাল পাঠাবে কল ডিক্লাইন করার ক্ষেত্রে
+            showNotification("Call In Date");
             return;
           }
           if(!msgObj.conversationId && msgObj.sender && msgObj.sender !== username) {
@@ -784,8 +884,8 @@
       if(document.fullscreenElement) {
         document.exitFullscreen();
       }
-      // প্রেরণ করুন কল শেষের সিগন্যাল
       broadcastCallEnd();
+      showNotification("Call Ended");
     }
     closeCallModal.addEventListener('click', closeCallModalFunc);
     endCallBtn.addEventListener('click', closeCallModalFunc);
@@ -810,20 +910,50 @@
         });
       }
     }
+    // Incoming call handler: রিসিভার পাশে একটি পপআপ দেখাবে Accept/Decline অপশন
+    function incomingCallHandler(call) {
+      currentCall = call;
+      // Show incoming call modal
+      incomingCallModal.style.display = "block";
+      // Accept
+      acceptCallBtn.onclick = () => {
+        const constraints = (call.metadata && call.metadata.type === "audio") ? { audio: true } : { video: true, audio: true };
+        navigator.mediaDevices.getUserMedia(constraints)
+          .then(stream => {
+            localStream = stream;
+            localVideo.srcObject = stream;
+            call.answer(stream);
+            incomingCallModal.style.display = "none";
+            openCallModal();
+            call.on('stream', remoteStream => {
+              remoteVideo.srcObject = remoteStream;
+            });
+          })
+          .catch(err => {
+            console.error("মিডিয়া এক্সেস সমস্যাঃ", err);
+          });
+      };
+      // Decline
+      declineCallBtn.onclick = () => {
+        // Send decline signal to caller
+        const msgObj = { conversationId: call.metadata.conversationId || "", type: "callRequest" };
+        const conn = getConnection(call.peer);
+        if(conn && conn.open) {
+          conn.send(JSON.stringify(msgObj));
+        }
+        incomingCallModal.style.display = "none";
+        showNotification("Call Ended");
+      };
+    }
 
     /***** Profile Popover Functions *****/
     profileBtn.addEventListener('click', (e) => {
-      // টগল করুন প্রোফাইল পপওভার (বাটনের ঠিক পাশে)
-      if(profilePopover.style.display === "block") {
-        profilePopover.style.display = "none";
-      } else {
-        profilePopover.style.display = "block";
-      }
+      // Toggle profile popover
+      profilePopover.style.display = (profilePopover.style.display === "block") ? "none" : "block";
+      tempNameInput.value = username;
       e.stopPropagation();
     });
-    // পপওভার এর ভিতরে ক্লিক করলে বন্ধ না হয়
     profilePopover.addEventListener('click', e => e.stopPropagation());
-    // বাহিরে ক্লিক করলে পপওভার বন্ধ
     document.addEventListener('click', () => {
       profilePopover.style.display = "none";
     });
@@ -841,25 +971,24 @@
           localStorage.setItem(userRole + '_profilePicData', profilePicData);
           updateProfileButton();
           profilePopover.style.display = "none";
-          updateContactAvatars();
+          // Update avatars in contact list if needed
         };
         reader.readAsDataURL(file);
       } else {
         profilePopover.style.display = "none";
       }
+      // পাসওয়ার্ড পরিবর্তনের জন্য (সরাসরি সেভ করা, উদাহরণ স্বরূপ)
+      if(newPasswordInput.value.trim()) {
+        localStorage.setItem(userRole + '_password', newPasswordInput.value.trim());
+        newPasswordInput.value = "";
+      }
     });
-    function updateContactAvatars() {
-      const lis = document.querySelectorAll('aside.contacts li');
-      lis.forEach(li => {
-        let img = li.querySelector('img');
-        if(!img) {
-          img = document.createElement('img');
-          li.insertBefore(img, li.firstChild);
-        }
-        // শুধুমাত্র সেই একাউন্টের জন্য যদি কোনো প্রোফাইল ছবি থাকে (এখানে আলাদা করে দেখানো যায়)
-        img.src = "";
-      });
-    }
+    logoutBtn.addEventListener('click', () => {
+      // Clear লগইন তথ্য ও রিলোড পেজ
+      localStorage.removeItem('loggedIn');
+      localStorage.removeItem('loggedAccount');
+      location.reload();
+    });
 
     /***** Theme Persistence *****/
     const savedTheme = localStorage.getItem('theme');
@@ -876,6 +1005,9 @@
     }
     // ডবল-ক্লিকে থিম পরিবর্তন
     profileBtn.addEventListener('dblclick', toggleAndSaveTheme);
+
+    /***** Auto-Login *****/
+    autoLogin();
   </script>
 </body>
 </html>
