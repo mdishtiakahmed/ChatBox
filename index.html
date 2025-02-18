@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>লাইভ ভিডিও &amp; চ্যাট</title>
   <style>
-    /* Basic Reset & Global Styles */
+    /* Global Reset & Basic Styles */
     * {
       margin: 0;
       padding: 0;
@@ -17,7 +17,6 @@
       color: #333;
       transition: background-color 0.3s, color 0.3s;
     }
-    /* Dark theme (toggle by adding .dark-theme class to body) */
     body.dark-theme {
       background-color: #1e1e1e;
       color: #ddd;
@@ -67,11 +66,12 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      position: relative;
     }
     header.header h1 {
       font-size: 20px;
     }
-    /* Profile button: 50% rounded */
+    /* Profile Button & Popover */
     .profile-btn {
       background: #fff;
       color: #075E54;
@@ -80,8 +80,50 @@
       border-radius: 50%;
       cursor: pointer;
       font-weight: bold;
+      position: relative;
     }
-    /* Main layout: Sidebar & Chat area */
+    /* Profile Popover (opens near the button) */
+    .profile-popover {
+      display: none;
+      position: absolute;
+      top: 50px;
+      right: 0;
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      padding: 10px;
+      width: 250px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      z-index: 12000;
+    }
+    .profile-popover h3 {
+      margin-bottom: 10px;
+      font-size: 18px;
+      text-align: center;
+    }
+    .profile-popover label {
+      display: block;
+      margin: 8px 0 4px;
+      font-size: 14px;
+    }
+    .profile-popover input[type="text"],
+    .profile-popover input[type="file"] {
+      width: 100%;
+      padding: 6px;
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+    .profile-popover button {
+      width: 100%;
+      padding: 8px;
+      background: #075E54;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    /* Main Layout: Sidebar & Chat Area */
     .main {
       flex: 1;
       display: flex;
@@ -204,7 +246,7 @@
       margin-left: 8px;
       margin-right: 0;
     }
-    /* Chat input area */
+    /* Chat Input Area */
     .chat-input-container {
       display: flex;
       padding: 8px;
@@ -269,28 +311,27 @@
       cursor: pointer;
       z-index: 12000;
     }
+    /* Video Container: Remote & Local arranged vertically */
     .video-container {
-      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       width: 90%;
       max-width: 900px;
       background: #000;
       border-radius: 8px;
       overflow: hidden;
     }
-    #remoteVideo {
+    .video-container video {
       width: 100%;
-      height: auto;
-      background: #000;
+      object-fit: cover;
+    }
+    #remoteVideo {
+      max-height: 80vh;
     }
     #localVideo {
-      position: absolute;
-      bottom: 10px;
-      right: 10px;
-      width: 200px;
-      height: auto;
-      border: 2px solid #fff;
-      border-radius: 5px;
-      transform: scaleX(-1);
+      max-height: 20vh;
+      margin-top: 10px;
     }
     .call-end-btn {
       margin-top: 20px;
@@ -302,59 +343,27 @@
       font-size: 18px;
       cursor: pointer;
     }
-    /* Profile Modal */
-    .profile-modal {
-      display: none;
-      position: fixed;
-      z-index: 12000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.5);
-      justify-content: center;
-      align-items: center;
-    }
-    .profile-modal-content {
-      background: #fff;
-      padding: 20px;
-      border-radius: 8px;
-      width: 90%;
-      max-width: 400px;
-    }
-    .profile-modal-content h3 {
-      margin-bottom: 15px;
-    }
-    .profile-modal-content label {
-      display: block;
-      margin: 10px 0 5px;
-    }
-    .profile-modal-content input[type="text"],
-    .profile-modal-content input[type="file"] {
-      width: 100%;
-      padding: 8px;
-      font-size: 16px;
-    }
-    .profile-modal-content button {
-      margin-top: 15px;
-      padding: 10px;
-      background: #075E54;
-      color: #fff;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      width: 100%;
-    }
-    /* Media Queries for Mobile */
+    /* Media Queries */
     @media (max-width: 600px) {
+      /* Sidebar becomes horizontal scrollable bar */
       aside.contacts {
         width: 100%;
         height: auto;
         border-right: none;
         border-bottom: 1px solid #ccc;
+        display: flex;
+        flex-direction: row;
+        overflow-x: auto;
+        white-space: nowrap;
+        padding: 5px;
       }
-      .main {
-        flex-direction: column;
+      aside.contacts ul {
+        display: flex;
+        flex-direction: row;
+      }
+      aside.contacts li {
+        flex: 0 0 auto;
+        margin-right: 10px;
       }
       header.header h1 {
         font-size: 18px;
@@ -363,7 +372,7 @@
         padding: 6px 10px;
       }
       #localVideo {
-        width: 120px;
+        max-height: 25vh;
       }
       .chat-input-container input[type="text"] {
         font-size: 14px;
@@ -398,11 +407,20 @@
   <div id="appSection" class="app-section">
     <header class="header">
       <h1>লাইভ ভিডিও &amp; চ্যাট</h1>
-      <!-- Profile button -->
+      <!-- Profile Button (shows image if exists) -->
       <button id="profileBtn" class="profile-btn" title="প্রোফাইল আপডেট করুন">PN</button>
+      <!-- Profile Popover (appears beside the button) -->
+      <div id="profilePopover" class="profile-popover">
+        <h3>প্রোফাইল আপডেট</h3>
+        <label for="tempName">সাময়িক নাম:</label>
+        <input type="text" id="tempName" placeholder="নতুন নাম লিখুন">
+        <label for="profilePic">প্রোফাইল পিকচার:</label>
+        <input type="file" id="profilePic">
+        <button id="saveProfileBtn">সেভ করুন</button>
+      </div>
     </header>
     <div class="main">
-      <!-- Sidebar: Contact List -->
+      <!-- Sidebar: Contacts -->
       <aside class="contacts">
         <h3>কন্টাক্ট</h3>
         <ul id="contactList"></ul>
@@ -440,31 +458,16 @@
     </div>
   </div>
 
-  <!-- Profile Modal -->
-  <div id="profileModal" class="profile-modal">
-    <div class="profile-modal-content">
-      <h3>প্রোফাইল আপডেট</h3>
-      <label for="tempName">সাময়িক নাম:</label>
-      <input type="text" id="tempName" placeholder="নতুন নাম লিখুন">
-      <label for="profilePic">প্রোফাইল পিকচার:</label>
-      <input type="file" id="profilePic">
-      <button id="saveProfileBtn">সেভ করুন</button>
-    </div>
-  </div>
-
   <!-- PeerJS Library -->
   <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
   <script>
     /***** Global Variables *****/
     let userRole = "";
     let username = "";
-    let profilePicData = ""; // base64 image data
+    let profilePicData = "";
     let peer = null;
-    // Maintain connections with peers (key: peerId)
-    const connections = {};
-    // Store conversation histories; key: conversationId, value: array of messages
+    const connections = {}; // { peerId: conn }
     let conversations = JSON.parse(localStorage.getItem('conversations')) || {};
-    // Current active conversation object: { id, participants: [peerId,...] }
     let currentConversation = null;
     let localStream = null;
     let currentCall = null;
@@ -477,7 +480,7 @@
     const loginButton = document.getElementById('loginButton');
 
     const profileBtn = document.getElementById('profileBtn');
-    const profileModal = document.getElementById('profileModal');
+    const profilePopover = document.getElementById('profilePopover');
     const tempNameInput = document.getElementById('tempName');
     const profilePicInput = document.getElementById('profilePic');
     const saveProfileBtn = document.getElementById('saveProfileBtn');
@@ -502,28 +505,25 @@
     const remoteVideo = document.getElementById('remoteVideo');
 
     /***** Utility Functions *****/
-    // Compute a unique conversationId for one-to-one chat (alphabetically sorted)
     function getConversationId(participants) {
       return participants.sort().join('_');
     }
-    // Save conversations to localStorage
     function saveConversations() {
       localStorage.setItem('conversations', JSON.stringify(conversations));
     }
-    // Append message to a conversation and update UI if current conversation matches
-    function appendMessage(convoId, sender, messageObj) {
+    function appendMessage(convoId, sender, msgObj) {
       if (!conversations[convoId]) conversations[convoId] = [];
-      conversations[convoId].push(messageObj);
+      conversations[convoId].push(msgObj);
       saveConversations();
       if (currentConversation && currentConversation.id === convoId) {
-        displayMessage(messageObj);
+        displayMessage(msgObj);
       }
     }
-    // Display a single message in chat area
     function displayMessage(msg) {
       const msgDiv = document.createElement('div');
       msgDiv.classList.add('message');
       let avatarHTML = "";
+      // যদি প্রোফাইল ছবি থাকে, তবে শুধুমাত্র ওই একাউন্টের জন্য দেখানো হবে
       if(msg.sender === username && profilePicData) {
         avatarHTML = `<img class="avatar" src="${profilePicData}" alt="Avatar">`;
       }
@@ -536,9 +536,13 @@
       }
       if(msg.type === 'file') {
         if(msg.fileType.startsWith("image/")) {
-          msgDiv.innerHTML = `${avatarHTML}<div><strong>${msg.sender}</strong> (${msg.time}):<br><img src="${msg.fileData}" alt="${msg.fileName}" style="max-width:200px;"></div>`;
+          msgDiv.innerHTML = `${avatarHTML}<div><strong>${msg.sender}</strong> (${msg.time}):<br>
+            <a href="${msg.fileData}" download="${msg.fileName}">
+              <img src="${msg.fileData}" alt="${msg.fileName}" style="max-width:200px;">
+            </a></div>`;
         } else {
-          msgDiv.innerHTML = `${avatarHTML}<div><strong>${msg.sender}</strong> (${msg.time}):<br><a href="${msg.fileData}" download="${msg.fileName}">${msg.fileName}</a></div>`;
+          msgDiv.innerHTML = `${avatarHTML}<div><strong>${msg.sender}</strong> (${msg.time}):<br>
+            <a href="${msg.fileData}" download="${msg.fileName}">${msg.fileName}</a></div>`;
         }
       } else {
         msgDiv.innerHTML = `${avatarHTML}<div><strong>${msg.sender}</strong> (${msg.time}):<br>${msg.text}</div>`;
@@ -546,32 +550,26 @@
       chatMessagesEl.appendChild(msgDiv);
       chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
     }
-    // Clear chat messages UI
     function clearChatMessages() {
       chatMessagesEl.innerHTML = "";
     }
-    // Toggle theme on body (light/dark)
     function toggleTheme() {
       document.body.classList.toggle('dark-theme');
     }
 
     /***** Load Saved Data *****/
     function loadSavedProfile() {
-      const savedName = localStorage.getItem('username');
-      const savedPic = localStorage.getItem('profilePicData');
-      if(savedName) {
-        username = savedName;
-      }
-      if(savedPic) {
-        profilePicData = savedPic;
-      }
+      const savedName = localStorage.getItem(userRole + '_username');
+      const savedPic = localStorage.getItem(userRole + '_profilePicData');
+      if(savedName) username = savedName;
+      if(savedPic) profilePicData = savedPic;
+      updateProfileButton();
     }
-
-    /***** Load Conversations from Storage *****/
-    function loadConversationsFromStorage() {
-      const savedConvos = localStorage.getItem('conversations');
-      if(savedConvos) {
-        conversations = JSON.parse(savedConvos);
+    function updateProfileButton() {
+      if(profilePicData) {
+        profileBtn.innerHTML = `<img src="${profilePicData}" alt="Avatar" style="width:30px;height:30px;border-radius:50%;object-fit:cover;">`;
+      } else {
+        profileBtn.textContent = "PN";
       }
     }
 
@@ -584,10 +582,9 @@
         return;
       }
       userRole = selectedAccount;
+      // লোগইন তথ্য (username, প্রোফাইল ছবি) account-specificভাবে লোড
       loadSavedProfile();
-      if(!username) {
-        username = selectedAccount;
-      }
+      if(!username) username = selectedAccount;
       peer = new Peer(userRole, { debug: 2 });
       peer.on('error', err => {
         if(err.type === 'unavailable-id'){
@@ -602,7 +599,6 @@
         loginSection.style.display = "none";
         appSection.style.display = "flex";
         initializeContacts();
-        loadConversationsFromStorage();
       });
       peer.on('connection', conn => {
         setupConnection(conn);
@@ -634,6 +630,11 @@
       conn.on('data', data => {
         try {
           const msgObj = JSON.parse(data);
+          // যদি কল শেষের সিগন্যাল পাওয়া যায়
+          if(msgObj.type === "callEnded") {
+            endCall();
+            return;
+          }
           if(!msgObj.conversationId && msgObj.sender && msgObj.sender !== username) {
             msgObj.conversationId = getConversationId([msgObj.sender, username]);
           }
@@ -756,7 +757,8 @@
           localStream = stream;
           localVideo.srcObject = stream;
           openCallModal();
-          if(window.innerWidth < 600) {
+          // মোবাইলে অটো ফুলস্ক্রিন
+          if(window.innerWidth < 600 && callModal.requestFullscreen) {
             callModal.requestFullscreen().catch(err => console.log(err));
           }
           currentConversation.participants.forEach(peerId => {
@@ -782,6 +784,8 @@
       if(document.fullscreenElement) {
         document.exitFullscreen();
       }
+      // প্রেরণ করুন কল শেষের সিগন্যাল
+      broadcastCallEnd();
     }
     closeCallModal.addEventListener('click', closeCallModalFunc);
     endCallBtn.addEventListener('click', closeCallModalFunc);
@@ -795,35 +799,53 @@
         currentCall = null;
       }
     }
+    function broadcastCallEnd() {
+      if(currentConversation) {
+        const msgObj = { conversationId: currentConversation.id, type: "callEnded" };
+        currentConversation.participants.forEach(peerId => {
+          const conn = getConnection(peerId);
+          if(conn && conn.open) {
+            conn.send(JSON.stringify(msgObj));
+          }
+        });
+      }
+    }
 
-    /***** Profile Modal Functions *****/
-    profileBtn.addEventListener('click', () => {
-      profileModal.style.display = "flex";
-      tempNameInput.value = username;
+    /***** Profile Popover Functions *****/
+    profileBtn.addEventListener('click', (e) => {
+      // টগল করুন প্রোফাইল পপওভার (বাটনের ঠিক পাশে)
+      if(profilePopover.style.display === "block") {
+        profilePopover.style.display = "none";
+      } else {
+        profilePopover.style.display = "block";
+      }
+      e.stopPropagation();
+    });
+    // পপওভার এর ভিতরে ক্লিক করলে বন্ধ না হয়
+    profilePopover.addEventListener('click', e => e.stopPropagation());
+    // বাহিরে ক্লিক করলে পপওভার বন্ধ
+    document.addEventListener('click', () => {
+      profilePopover.style.display = "none";
     });
     saveProfileBtn.addEventListener('click', () => {
       const newName = tempNameInput.value.trim();
       if(newName) {
         username = newName;
-        localStorage.setItem('username', username);
+        localStorage.setItem(userRole + '_username', username);
       }
       if(profilePicInput.files && profilePicInput.files[0]) {
         const file = profilePicInput.files[0];
         const reader = new FileReader();
         reader.onload = function(e) {
           profilePicData = e.target.result;
-          localStorage.setItem('profilePicData', profilePicData);
-          profileModal.style.display = "none";
+          localStorage.setItem(userRole + '_profilePicData', profilePicData);
+          updateProfileButton();
+          profilePopover.style.display = "none";
           updateContactAvatars();
         };
         reader.readAsDataURL(file);
       } else {
-        profileModal.style.display = "none";
-      }
-    });
-    profileModal.addEventListener('click', (e) => {
-      if(e.target === profileModal) {
-        profileModal.style.display = "none";
+        profilePopover.style.display = "none";
       }
     });
     function updateContactAvatars() {
@@ -834,10 +856,8 @@
           img = document.createElement('img');
           li.insertBefore(img, li.firstChild);
         }
-        if(profilePicData) {
-          img.src = profilePicData;
-          img.style.display = "block";
-        }
+        // শুধুমাত্র সেই একাউন্টের জন্য যদি কোনো প্রোফাইল ছবি থাকে (এখানে আলাদা করে দেখানো যায়)
+        img.src = "";
       });
     }
 
@@ -854,7 +874,7 @@
         localStorage.setItem('theme', 'light');
       }
     }
-    // ডবল-ক্লিকে থিম পরিবর্তন (প্রোফাইল বাটনে)
+    // ডবল-ক্লিকে থিম পরিবর্তন
     profileBtn.addEventListener('dblclick', toggleAndSaveTheme);
   </script>
 </body>
