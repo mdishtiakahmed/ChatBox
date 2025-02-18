@@ -4,136 +4,219 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>লাইভ ভিডিও &amp; চ্যাট</title>
-  <!-- PeerJS লাইব্রেরি -->
-  <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
   <style>
-    /* Premium WhatsApp-সদৃশ ডিজাইন */
-    body {
+    /* Basic Reset & Global Styles */
+    * {
       margin: 0;
       padding: 0;
+      box-sizing: border-box;
+    }
+    body {
       font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
       background-color: #ece5dd;
+      color: #333;
+      transition: background-color 0.3s, color 0.3s;
     }
-    .container {
-      max-width: 960px;
-      margin: 0 auto;
-      background-color: #fff;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
+    /* Dark theme (toggle by adding .dark-theme class to body) */
+    body.dark-theme {
+      background-color: #1e1e1e;
+      color: #ddd;
     }
-    .header {
-      background-color: #075E54;
-      color: #fff;
-      padding: 15px;
+    /* Login Section */
+    #loginSection {
+      max-width: 400px;
+      margin: 80px auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    #loginSection h2 {
       text-align: center;
-      font-size: 20px;
+      margin-bottom: 15px;
     }
-    .login-section, .chat-section {
-      padding: 15px;
-    }
-    .login-section input, .login-section select, .login-section button,
-    .chat-section input, .chat-section button {
+    #loginSection label,
+    #loginSection select,
+    #loginSection input,
+    #loginSection button {
       width: 100%;
       margin: 8px 0;
       padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      box-sizing: border-box;
       font-size: 16px;
     }
-    .login-section button, .chat-section button {
-      background-color: #075E54;
+    #loginSection button {
+      background: #075E54;
       color: #fff;
       border: none;
       cursor: pointer;
-      transition: background 0.3s ease;
+      border-radius: 4px;
     }
-    .login-section button:hover, .chat-section button:hover {
-      background-color: #0a7a71;
+    #loginSection button:hover {
+      background: #0a7a71;
     }
-    .chat-container {
+    /* App Section (after login) */
+    #appSection {
+      display: none;
+      height: 100vh;
+      flex-direction: column;
+    }
+    header.header {
+      background-color: #075E54;
+      color: #fff;
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    header.header h1 {
+      font-size: 20px;
+    }
+    /* Profile button: 50% rounded */
+    .profile-btn {
+      background: #fff;
+      color: #075E54;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    /* Main layout: Sidebar & Chat area */
+    .main {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+    aside.contacts {
+      width: 250px;
+      background: #f0f0f0;
+      border-right: 1px solid #ccc;
+      overflow-y: auto;
+      padding: 10px;
+    }
+    aside.contacts h3 {
+      margin-bottom: 10px;
+      text-align: center;
+    }
+    aside.contacts ul {
+      list-style: none;
+    }
+    aside.contacts li {
+      padding: 10px;
+      margin: 5px 0;
+      background: #fff;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    aside.contacts li:hover,
+    aside.contacts li.active {
+      background: #d0f0d0;
+    }
+    aside.contacts button {
+      width: 100%;
+      margin-top: 10px;
+      padding: 8px;
+      background: #075E54;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    /* Chat Section */
+    section.chat-section {
       flex: 1;
       display: flex;
       flex-direction: column;
-      background-color: #e5ddd5;
-      border-top: 1px solid #ccc;
+      background: #e5ddd5;
+      position: relative;
     }
-    #chatMessages {
+    .chat-header {
+      background: #075E54;
+      color: #fff;
+      padding: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .chat-header .call-actions button {
+      background: #34B7F1;
+      color: #fff;
+      border: none;
+      padding: 6px 10px;
+      margin-left: 5px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .chat-messages {
       flex: 1;
       overflow-y: auto;
       padding: 10px;
-      background-color: #e5ddd5;
-    }
-    .chat-input-container {
-      display: flex;
-      padding: 10px;
-      background-color: #f0f0f0;
-      border-top: 1px solid #ccc;
-    }
-    .chat-input-container input {
-      flex: 1;
-      padding: 10px;
-      border: none;
-      border-radius: 4px;
-    }
-    .chat-input-container button {
-      background-color: #075E54;
-      border: none;
-      color: #fff;
-      padding: 10px 15px;
-      margin-left: 10px;
-      border-radius: 4px;
-      cursor: pointer;
     }
     .message {
-      margin: 8px;
+      margin: 8px 0;
+      max-width: 70%;
       padding: 10px 15px;
       border-radius: 20px;
-      max-width: 80%;
       word-wrap: break-word;
+      font-size: 15px;
+      clear: both;
     }
     .message.self {
-      background-color: #dcf8c6;
-      align-self: flex-end;
+      background: #dcf8c6;
+      float: right;
+      text-align: right;
     }
     .message.peer {
-      background-color: #fff;
-      align-self: flex-start;
+      background: #fff;
+      float: left;
+      text-align: left;
     }
     .message.system {
+      background: #e0e0e0;
       text-align: center;
-      color: #888;
+      margin: 10px auto;
+      max-width: 90%;
       font-size: 12px;
     }
-    /* Floating call buttons */
-    .call-buttons {
-      position: fixed;
-      bottom: 80px;
-      right: 30px;
+    /* Chat input area */
+    .chat-input-container {
       display: flex;
-      flex-direction: column;
-      gap: 15px;
-      z-index: 10000;
+      padding: 8px;
+      background: #f0f0f0;
+      align-items: center;
     }
-    .call-btn {
-      background-color: #25D366;
+    .chat-input-container input[type="text"] {
+      flex: 1;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    .chat-input-container .send-btn {
+      padding: 8px 12px;
+      margin-left: 5px;
+      background: #075E54;
       color: #fff;
       border: none;
-      padding: 12px;
-      border-radius: 50%;
-      width: 60px;
-      height: 60px;
-      font-size: 24px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+      border-radius: 4px;
       cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      font-size: 14px;
     }
-    .call-btn.audio {
-      background-color: #34B7F1;
+    .chat-input-container #fileBtn {
+      padding: 8px 12px;
+      margin-right: 5px;
+      background: #999;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    /* Fixed chat box height */
+    .chat-section {
+      position: relative;
     }
     /* Fullscreen Modal for Calls */
     .modal {
@@ -144,7 +227,7 @@
       top: 0;
       width: 100%;
       height: 100%;
-      background-color: rgba(0,0,0,0.85);
+      background: rgba(0,0,0,0.85);
       overflow: auto;
     }
     .modal-content {
@@ -156,13 +239,13 @@
       justify-content: center;
       align-items: center;
     }
-    .close {
-      color: #fff;
+    .modal .close {
       position: absolute;
       top: 20px;
       right: 30px;
       font-size: 40px;
       font-weight: bold;
+      color: #fff;
       cursor: pointer;
       z-index: 12000;
     }
@@ -189,360 +272,421 @@
       border-radius: 5px;
       transform: scaleX(-1);
     }
-    @media (max-width: 600px) {
-      #localVideo {
-        width: 120px;
-      }
-    }
     .call-end-btn {
-      background-color: #d9534f;
+      margin-top: 20px;
+      background: #d9534f;
       color: #fff;
       border: none;
-      padding: 12px;
-      width: 200px;
-      border-radius: 5px;
+      padding: 12px 20px;
+      border-radius: 4px;
       font-size: 18px;
-      margin-top: 20px;
       cursor: pointer;
     }
-    .call-end-btn:hover {
-      background-color: #c9302c;
+    @media (max-width: 600px) {
+      aside.contacts { width: 200px; }
+      .profile-btn { padding: 6px 10px; }
+      #localVideo { width: 120px; }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="header">লাইভ ভিডিও &amp; চ্যাট</div>
-    <!-- Login Section -->
-    <div id="loginSection" class="login-section">
-      <h2>লগইন</h2>
-      <label for="accountSelect">একাউন্ট নির্বাচন করুন:</label>
-      <select id="accountSelect">
-        <option value="account1">Account 1</option>
-        <option value="account2">Account 2</option>
-      </select>
-      <label for="passwordInput">পাসওয়ার্ড:</label>
-      <input type="password" id="passwordInput" placeholder="পাসওয়ার্ড দিন">
-      <button id="loginButton">লগইন</button>
-    </div>
-
-    <!-- Chat Section -->
-    <div id="chatSection" class="chat-section" style="display:none;">
-      <div>
-        <label for="usernameInput">আপনার নাম:</label>
-        <input type="text" id="usernameInput" placeholder="আপনার নাম লিখুন" value="">
-        <button id="updateUsername">নাম আপডেট করুন</button>
-      </div>
-      <div class="chat-container">
-        <div id="chatMessages"></div>
-        <div class="chat-input-container">
-          <input type="text" id="chatInput" placeholder="মেসেজ লিখুন...">
-          <button id="sendChat">পাঠান</button>
-        </div>
-      </div>
-    </div>
+  <!-- Login Section -->
+  <div id="loginSection">
+    <h2>লগইন</h2>
+    <label for="accountSelect">একাউন্ট নির্বাচন করুন:</label>
+    <select id="accountSelect">
+      <option value="account1">Account 1</option>
+      <option value="account2">Account 2</option>
+      <option value="account3">Account 3</option>
+      <option value="account4">Account 4</option>
+      <option value="account5">Account 5</option>
+      <option value="account6">Account 6</option>
+    </select>
+    <label for="passwordInput">পাসওয়ার্ড:</label>
+    <input type="password" id="passwordInput" placeholder="পাসওয়ার্ড দিন">
+    <button id="loginButton">লগইন</button>
   </div>
 
-  <!-- Floating Call Buttons -->
-  <div class="call-buttons">
-    <button id="startVideoCall" class="call-btn">&#128249;</button>
-    <button id="startAudioCall" class="call-btn audio">&#128222;</button>
+  <!-- Main App Section -->
+  <div id="appSection" class="app-section">
+    <header class="header">
+      <h1>লাইভ ভিডিও &amp; চ্যাট</h1>
+      <!-- Profile button: 50% rounded; ক্লিক করলে থিম পরিবর্তনের অপশন -->
+      <button id="profileBtn" class="profile-btn" title="থিম পরিবর্তন করুন">PN</button>
+    </header>
+    <div class="main">
+      <!-- Sidebar: Contact List -->
+      <aside class="contacts">
+        <h3>কন্টাক্ট</h3>
+        <ul id="contactList"></ul>
+        <!-- Button to create group chat -->
+        <button id="createGroupBtn">নতুন গ্রুপ চ্যাট</button>
+      </aside>
+      <!-- Chat Area -->
+      <section class="chat-section">
+        <div class="chat-header">
+          <span id="chatWith">মেসেজ</span>
+          <div class="call-actions">
+            <button id="videoCallBtn">ভিডিও কল</button>
+            <button id="audioCallBtn">অডিও কল</button>
+          </div>
+        </div>
+        <div id="chatMessages" class="chat-messages"></div>
+        <div class="chat-input-container">
+          <button id="fileBtn">ফাইল</button>
+          <input type="file" id="fileInput" style="display:none">
+          <input type="text" id="chatInput" placeholder="মেসেজ লিখুন...">
+          <button id="sendChatBtn" class="send-btn">পাঠান</button>
+        </div>
+      </section>
+    </div>
   </div>
 
   <!-- Fullscreen Modal for Calls -->
   <div id="callModal" class="modal">
     <div class="modal-content">
-      <span class="close" id="closeModal">&times;</span>
+      <span class="close" id="closeCallModal">&times;</span>
       <div class="video-container" id="videoContainer">
         <video id="remoteVideo" autoplay></video>
         <video id="localVideo" autoplay muted></video>
       </div>
-      <button id="stopCall" class="call-end-btn">কল শেষ করুন</button>
+      <button id="endCallBtn" class="call-end-btn">কল শেষ করুন</button>
     </div>
   </div>
 
-  <!-- Audio element for ringtone -->
-  <audio id="ringtone" loop>
-    <source src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg" type="audio/ogg">
-    <source src="https://actions.google.com/sounds/v1/alarms/alarm_clock.mp3" type="audio/mpeg">
-  </audio>
-
+  <!-- PeerJS Library -->
+  <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
   <script>
-    // ------------------ Global Variables ------------------
-    let userRole;       // "account1" অথবা "account2"
-    let username;       // ব্যবহারকারীর নাম
-    let peer;
-    let dataConn;
-    let localStream;
-    let currentCall;
-    let callType = "video"; // বা "audio"
-    let chatHistory = [];
+    /***** Global Variables *****/
+    let userRole = "";
+    let username = "";
+    let peer = null;
+    // Maintain connections with peers (key: peerId)
+    const connections = {};
+    // Store conversation histories; key: conversationId, value: array of messages
+    const conversations = {};
+    // Current active conversation object: { id, participants: [peerId,...] }
+    let currentConversation = null;
 
-    // DOM Elements
+    /***** DOM Elements *****/
     const loginSection = document.getElementById('loginSection');
-    const chatSection  = document.getElementById('chatSection');
-
-    const loginButton   = document.getElementById('loginButton');
-    const passwordInput = document.getElementById('passwordInput');
+    const appSection = document.getElementById('appSection');
     const accountSelect = document.getElementById('accountSelect');
+    const passwordInput = document.getElementById('passwordInput');
+    const loginButton = document.getElementById('loginButton');
 
-    const usernameInput     = document.getElementById('usernameInput');
-    const updateUsernameBtn = document.getElementById('updateUsername');
+    const profileBtn = document.getElementById('profileBtn');
 
-    const chatMessagesDiv = document.getElementById('chatMessages');
-    const chatInput       = document.getElementById('chatInput');
-    const sendChatButton  = document.getElementById('sendChat');
+    const contactListEl = document.getElementById('contactList');
+    const createGroupBtn = document.getElementById('createGroupBtn');
 
-    const startVideoCallButton = document.getElementById('startVideoCall');
-    const startAudioCallButton = document.getElementById('startAudioCall');
+    const chatWithEl = document.getElementById('chatWith');
+    const chatMessagesEl = document.getElementById('chatMessages');
+    const chatInput = document.getElementById('chatInput');
+    const sendChatBtn = document.getElementById('sendChatBtn');
+    const fileBtn = document.getElementById('fileBtn');
+    const fileInput = document.getElementById('fileInput');
+
+    const videoCallBtn = document.getElementById('videoCallBtn');
+    const audioCallBtn = document.getElementById('audioCallBtn');
+
     const callModal = document.getElementById('callModal');
-    const closeModal = document.getElementById('closeModal');
-    const stopCallButton = document.getElementById('stopCall');
-
-    const localVideo  = document.getElementById('localVideo');
+    const closeCallModal = document.getElementById('closeCallModal');
+    const endCallBtn = document.getElementById('endCallBtn');
+    const localVideo = document.getElementById('localVideo');
     const remoteVideo = document.getElementById('remoteVideo');
-    const ringtone = document.getElementById('ringtone');
 
-    // ------------------ Local Storage Functions ------------------
-    function saveLoginInfo() {
-      localStorage.setItem('userRole', userRole);
-      localStorage.setItem('username', username);
+    /***** Utility Functions *****/
+    // Compute a unique conversationId for one-to-one chat (alphabetically sorted)
+    function getConversationId(participants) {
+      return participants.sort().join('_');
     }
-    function loadLoginInfo() {
-      const storedRole = localStorage.getItem('userRole');
-      const storedName = localStorage.getItem('username');
-      if (storedRole && storedName) {
-        userRole = storedRole;
-        username = storedName;
-        usernameInput.value = username;
-        accountSelect.value = userRole;
-        return true;
+    // Append message to a conversation and update UI if current conversation matches
+    function appendMessage(convoId, sender, messageObj) {
+      if (!conversations[convoId]) conversations[convoId] = [];
+      conversations[convoId].push(messageObj);
+      // If the current conversation is open, display message
+      if (currentConversation && currentConversation.id === convoId) {
+        displayMessage(messageObj);
       }
-      return false;
+      // Optionally: store conversations in localStorage
     }
-    function saveChatHistory() {
-      localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
-    }
-    function loadChatHistory() {
-      const storedChat = localStorage.getItem('chatHistory');
-      if (storedChat) {
-        chatHistory = JSON.parse(storedChat);
-        chatHistory.forEach(msg => {
-          appendChatMessage(msg.sender, msg.text, msg.time, false);
-        });
-      }
-    }
-
-    // ------------------ Notification and Ringtone Functions ------------------
-    function showIncomingCallNotification(caller) {
-      if (Notification.permission === "granted") {
-        new Notification("ইনকামিং কল", {
-          body: caller + " কল করছেন।",
-          icon: "https://www.iconpacks.net/icons/2/free-phone-icon-3451-thumb.png"
-        });
-      }
-    }
-    function playRingtone() {
-      ringtone.currentTime = 0;
-      ringtone.play().catch(e => console.log(e));
-    }
-    function stopRingtone() {
-      ringtone.pause();
-      ringtone.currentTime = 0;
-    }
-    // Request Notification permission on load
-    if (Notification.permission !== "granted") {
-      Notification.requestPermission();
-    }
-
-    // ------------------ Modal Functions ------------------
-    function openCallModal() {
-      callModal.style.display = "block";
-    }
-    function closeCallModal() {
-      callModal.style.display = "none";
-    }
-
-    closeModal.addEventListener('click', () => {
-      endCall();
-    });
-
-    // ------------------ PeerJS Initialization ------------------
-    function initPeer() {
-      peer = new Peer(userRole, { debug: 2 });
-      
-      peer.on('open', function(id) {
-        console.log("Peer ID:", id);
-        if(userRole === 'account1'){
-          dataConn = peer.connect("account2");
-          setupDataConnection(dataConn);
-        }
-      });
-      peer.on('connection', function(conn) {
-        dataConn = conn;
-        setupDataConnection(conn);
-      });
-      peer.on('call', function(call) {
-        currentCall = call;
-        // Incoming call: play ringtone and show notification
-        playRingtone();
-        showIncomingCallNotification(call.peer);
-        // 3 সেকেন্ড পরে কল গ্রহণের জন্য (ডিলে দিয়ে modal দেখাবে)
-        setTimeout(() => {
-          let constraints = (call.metadata && call.metadata.type === "audio") ? { audio: true } : { video: true, audio: true };
-          navigator.mediaDevices.getUserMedia(constraints)
-            .then(function(stream){
-              localStream = stream;
-              localVideo.srcObject = stream;
-              call.answer(stream);
-              openCallModal();
-              stopRingtone();
-              call.on('stream', function(remoteStream){
-                remoteVideo.srcObject = remoteStream;
-              });
-            })
-            .catch(function(err){
-              console.error("মিডিয়া ডিভাইস এক্সেসে সমস্যা:", err);
-            });
-        }, 3000);
-      });
-    }
-
-    // ------------------ Login Functionality ------------------
-    loginButton.addEventListener('click', function(){
-      const pwd = passwordInput.value.trim();
-      if(pwd !== 'robintanu'){
-        alert("ভুল পাসওয়ার্ড!");
-        return;
-      }
-      userRole = accountSelect.value;
-      username = userRole;  // ডিফল্ট নাম হিসেবে account নাম
-      usernameInput.value = username;
-      saveLoginInfo();
-      
-      loginSection.style.display = 'none';
-      chatSection.style.display  = 'block';
-
-      initPeer();
-      loadChatHistory();
-    });
-
-    // ------------------ Update Username ------------------
-    updateUsernameBtn.addEventListener('click', function(){
-      const newName = usernameInput.value.trim();
-      if(newName !== ""){
-        username = newName;
-        alert("নাম আপডেট হয়েছে: " + username);
-        saveLoginInfo();
-      }
-    });
-
-    // ------------------ Data Connection (Live Chat) Setup ------------------
-    function setupDataConnection(conn) {
-      conn.on('open', function(){
-        console.log("Data connection open");
-        appendChatMessage("system", "আপনার সংযোগ স্থাপিত হয়েছে।", new Date().toLocaleTimeString(), true);
-      });
-      conn.on('data', function(data){
-        try {
-          const parsed = JSON.parse(data);
-          appendChatMessage(parsed.sender, parsed.text, new Date().toLocaleTimeString(), true);
-        } catch (e) {
-          console.error("Invalid message format", e);
-        }
-      });
-      conn.on('error', function(err){
-        console.error(err);
-      });
-    }
-
-    // ------------------ Chat Message Functions ------------------
-    sendChatButton.addEventListener('click', sendChatMessage);
-    chatInput.addEventListener('keypress', function(e){
-      if(e.key === 'Enter'){
-        sendChatMessage();
-      }
-    });
-    function sendChatMessage() {
-      const msg = chatInput.value.trim();
-      if(msg === '' || !dataConn || !dataConn.open) return;
-      const time = new Date().toLocaleTimeString();
-      const messageData = { sender: username, text: msg, time: time };
-      dataConn.send(JSON.stringify(messageData));
-      appendChatMessage(username, msg, time, true);
-      chatInput.value = '';
-    }
-    function appendChatMessage(sender, message, time, saveMsg=true) {
+    // Display a single message in chat area
+    function displayMessage(msg) {
       const msgDiv = document.createElement('div');
       msgDiv.classList.add('message');
-      if(sender === username) {
+      if(msg.sender === username) {
         msgDiv.classList.add('self');
-      } else if(sender === "system") {
+      } else if(msg.type === 'system') {
         msgDiv.classList.add('system');
       } else {
         msgDiv.classList.add('peer');
       }
-      msgDiv.innerHTML = `<strong>${sender}</strong> (${time}):<br>${message}`;
-      chatMessagesDiv.appendChild(msgDiv);
-      chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
-      if(saveMsg) {
-        chatHistory.push({ sender, text: message, time });
-        saveChatHistory();
+      // For file messages, show image if image, else show link
+      if(msg.type === 'file') {
+        if(msg.fileType.startsWith("image/")) {
+          msgDiv.innerHTML = `<strong>${msg.sender}</strong> (${msg.time}):<br><img src="${msg.fileData}" alt="${msg.fileName}" style="max-width:200px;">`;
+        } else {
+          msgDiv.innerHTML = `<strong>${msg.sender}</strong> (${msg.time}):<br><a href="${msg.fileData}" download="${msg.fileName}">${msg.fileName}</a>`;
+        }
+      } else {
+        msgDiv.innerHTML = `<strong>${msg.sender}</strong> (${msg.time}):<br>${msg.text}`;
       }
+      chatMessagesEl.appendChild(msgDiv);
+      chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
+    }
+    // Clear chat messages UI
+    function clearChatMessages() {
+      chatMessagesEl.innerHTML = "";
+    }
+    // Toggle theme on body (light/dark)
+    function toggleTheme() {
+      document.body.classList.toggle('dark-theme');
     }
 
-    // ------------------ Call Functions ------------------
-    function startCall(isVideo = true) {
-      callType = isVideo ? "video" : "audio";
-      let constraints = isVideo ? { video: true, audio: true } : { audio: true };
-      navigator.mediaDevices.getUserMedia(constraints)
-        .then(function(stream){
-          localStream = stream;
-          if(isVideo) {
+    /***** Login & PeerJS Initialization *****/
+    loginButton.addEventListener('click', () => {
+      const selectedAccount = accountSelect.value;
+      const pwd = passwordInput.value.trim();
+      // Default password for each account is the account name itself
+      if(pwd !== selectedAccount) {
+        alert("ভুল পাসওয়ার্ড!");
+        return;
+      }
+      userRole = selectedAccount;
+      username = selectedAccount; // Default; later, user may change via Profile button (if implemented)
+      // Initialize PeerJS with id = userRole.
+      peer = new Peer(userRole, { debug: 2 });
+      // Handle duplicate login: if the id is already taken, error event is fired.
+      peer.on('error', err => {
+        if(err.type === 'unavailable-id'){
+          alert("এই একাউন্টে ইতোমধ্যে লগইন আছে!");
+          peer.destroy();
+        } else {
+          console.error(err);
+        }
+      });
+      peer.on('open', id => {
+        console.log("Peer ID:", id);
+        // Show main app UI and hide login
+        loginSection.style.display = "none";
+        appSection.style.display = "flex";
+        initializeContacts();
+      });
+      // Incoming data connection from other peers
+      peer.on('connection', conn => {
+        setupConnection(conn);
+      });
+      // Incoming call
+      peer.on('call', call => {
+        currentCall = call;
+        // For incoming call, answer automatically using proper constraints
+        const constraints = (call.metadata && call.metadata.type === "audio") ? { audio: true } : { video: true, audio: true };
+        navigator.mediaDevices.getUserMedia(constraints)
+          .then(stream => {
+            localStream = stream;
             localVideo.srcObject = stream;
-          }
-          openCallModal();
-          if(userRole === 'account1'){
-            // metadata দিয়ে কলের টাইপ পাঠানো
-            currentCall = peer.call("account2", stream, { metadata: { type: callType } });
-            currentCall.on('stream', function(remoteStream){
+            call.answer(stream);
+            openCallModal();
+            call.on('stream', remoteStream => {
               remoteVideo.srcObject = remoteStream;
             });
+          })
+          .catch(err => {
+            console.error("মিডিয়া এক্সেস সমস্যাঃ", err);
+          });
+      });
+    });
+
+    /***** Connection Setup *****/
+    // Setup a data connection with a peer
+    function setupConnection(conn) {
+      conn.on('open', () => {
+        console.log("Connected with", conn.peer);
+      });
+      conn.on('data', data => {
+        try {
+          const msgObj = JSON.parse(data);
+          // Ensure message has conversationId; if not, compute for one-to-one
+          if(!msgObj.conversationId && msgObj.sender && msgObj.sender !== username) {
+            msgObj.conversationId = getConversationId([msgObj.sender, username]);
           }
-        })
-        .catch(function(err){
-          console.error("মিডিয়া ডিভাইস এক্সেসে সমস্যা:", err);
-        });
+          appendMessage(msgObj.conversationId, msgObj.sender, msgObj);
+        } catch(e) {
+          console.error("Invalid message format", e);
+        }
+      });
+      conn.on('error', err => {
+        console.error("Connection error:", err);
+      });
+      // Save connection in global connections
+      connections[conn.peer] = conn;
+    }
+    // Get (or create) a connection to a given peer
+    function getConnection(peerId) {
+      if(connections[peerId] && connections[peerId].open) return connections[peerId];
+      const conn = peer.connect(peerId);
+      setupConnection(conn);
+      return conn;
     }
 
-    startVideoCallButton.addEventListener('click', function(){
-      startCall(true);
-    });
-    startAudioCallButton.addEventListener('click', function(){
-      startCall(false);
+    /***** Contacts & Conversations *****/
+    // Initialize contact list: list other accounts from account1 to account6 except self.
+    function initializeContacts() {
+      contactListEl.innerHTML = "";
+      const allAccounts = ["account1", "account2", "account3", "account4", "account5", "account6"];
+      allAccounts.forEach(acc => {
+        if(acc === userRole) return;
+        const li = document.createElement('li');
+        li.textContent = acc;
+        li.addEventListener('click', () => {
+          // For one-to-one chat, conversationId is sorted pair.
+          const convoId = getConversationId([userRole, acc]);
+          currentConversation = { id: convoId, participants: [acc] };
+          chatWithEl.textContent = acc;
+          // Highlight selected contact
+          document.querySelectorAll('aside.contacts li').forEach(item => item.classList.remove('active'));
+          li.classList.add('active');
+          // Load conversation messages (if any)
+          clearChatMessages();
+          if(conversations[convoId]) {
+            conversations[convoId].forEach(m => displayMessage(m));
+          }
+        });
+        contactListEl.appendChild(li);
+      });
+    }
+    // For group chat: prompt user to enter comma separated account names (from available accounts)
+    createGroupBtn.addEventListener('click', () => {
+      const input = prompt("গ্রুপে কারা থাকবে? (কমা দিয়ে আলাদা করে লিখুন, যেমন: account2,account3)");
+      if(!input) return;
+      const members = input.split(',').map(s => s.trim()).filter(s => s && s !== userRole);
+      if(members.length < 1) {
+        alert("কমপক্ষে একজন অন্য সদস্য আবশ্যক!");
+        return;
+      }
+      // Conversation id for group: prefix with "group_"
+      const convoId = "group_" + getConversationId([userRole, ...members]);
+      currentConversation = { id: convoId, participants: members };
+      chatWithEl.textContent = "গ্রুপ: " + members.join(', ');
+      // Optionally, add group to contact list
+      clearChatMessages();
+      if(conversations[convoId]) {
+        conversations[convoId].forEach(m => displayMessage(m));
+      }
     });
 
+    /***** Chat Message Functions *****/
+    sendChatBtn.addEventListener('click', sendChatMessage);
+    chatInput.addEventListener('keypress', (e) => {
+      if(e.key === 'Enter') sendChatMessage();
+    });
+    function sendChatMessage() {
+      const text = chatInput.value.trim();
+      if(text === "" || !currentConversation) return;
+      const time = new Date().toLocaleTimeString();
+      const msgObj = { conversationId: currentConversation.id, sender: username, text, time, type: 'text' };
+      // Append message locally
+      appendMessage(currentConversation.id, username, msgObj);
+      // Send message to each participant
+      currentConversation.participants.forEach(peerId => {
+        const conn = getConnection(peerId);
+        if(conn && conn.open) {
+          conn.send(JSON.stringify(msgObj));
+        }
+      });
+      chatInput.value = "";
+    }
+    // File sending
+    fileBtn.addEventListener('click', () => {
+      fileInput.click();
+    });
+    fileInput.addEventListener('change', () => {
+      const file = fileInput.files[0];
+      if(!file || !currentConversation) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const fileData = e.target.result;
+        const time = new Date().toLocaleTimeString();
+        const msgObj = {
+          conversationId: currentConversation.id,
+          sender: username,
+          type: 'file',
+          fileName: file.name,
+          fileData,
+          fileType: file.type,
+          time
+        };
+        appendMessage(currentConversation.id, username, msgObj);
+        // Send file message to each participant
+        currentConversation.participants.forEach(peerId => {
+          const conn = getConnection(peerId);
+          if(conn && conn.open) {
+            conn.send(JSON.stringify(msgObj));
+          }
+        });
+      };
+      reader.readAsDataURL(file);
+      fileInput.value = "";
+    });
+
+    /***** Call Functions *****/
+    let localStream = null;
+    let currentCall = null;
+    // Start call (video or audio) with current conversation participants (only for one-to-one here)
+    function startCall(isVideo = true) {
+      if(!currentConversation || currentConversation.participants.length < 1) {
+        alert("প্রথমে একজন কন্টাক্ট নির্বাচন করুন");
+        return;
+      }
+      const callType = isVideo ? "video" : "audio";
+      const constraints = isVideo ? { video: true, audio: true } : { audio: true };
+      navigator.mediaDevices.getUserMedia(constraints)
+        .then(stream => {
+          localStream = stream;
+          localVideo.srcObject = stream;
+          openCallModal();
+          // For each participant in the conversation, initiate call
+          currentConversation.participants.forEach(peerId => {
+            const call = peer.call(peerId, stream, { metadata: { type: callType, conversationId: currentConversation.id } });
+            call.on('stream', remoteStream => {
+              remoteVideo.srcObject = remoteStream;
+            });
+            currentCall = call;
+          });
+        })
+        .catch(err => {
+          console.error("মিডিয়া এক্সেস সমস্যাঃ", err);
+        });
+    }
+    videoCallBtn.addEventListener('click', () => startCall(true));
+    audioCallBtn.addEventListener('click', () => startCall(false));
+    // Modal functions for call
+    function openCallModal() {
+      callModal.style.display = "block";
+    }
+    function closeCallModalFunc() {
+      callModal.style.display = "none";
+      endCall();
+    }
+    closeCallModal.addEventListener('click', closeCallModalFunc);
+    endCallBtn.addEventListener('click', closeCallModalFunc);
     function endCall() {
-      if(localStream){
+      if(localStream) {
         localStream.getTracks().forEach(track => track.stop());
         localStream = null;
       }
-      if(currentCall){
+      if(currentCall) {
         currentCall.close();
+        currentCall = null;
       }
-      closeCallModal();
-      stopRingtone();
     }
 
-    stopCallButton.addEventListener('click', endCall);
+    /***** Profile Button: Theme Toggle *****/
+    profileBtn.addEventListener('click', () => {
+      toggleTheme();
+    });
 
-    // Auto-login if stored info exists
-    if(loadLoginInfo()){
-      loginSection.style.display = 'none';
-      chatSection.style.display  = 'block';
-      initPeer();
-      loadChatHistory();
-    }
   </script>
 </body>
 </html>
