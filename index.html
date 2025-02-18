@@ -114,7 +114,7 @@
       overflow-y: auto;
       padding: 10px;
     }
-    aside.contacts h3 {margin-bottom: 10px; text-align: center; }
+    aside.contacts h3 { margin-bottom: 10px; text-align: center; }
     aside.contacts ul { list-style: none; padding: 0; }
     aside.contacts li {
       padding: 10px;
@@ -134,6 +134,14 @@
       border-radius: 50%;
       margin-right: 10px;
       object-fit: cover;
+    }
+    /* Online/Offline indicator */
+    aside.contacts li .status {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-left: auto;
+      background: red; /* offline default */
     }
     aside.contacts button {
       width: 100%;
@@ -340,12 +348,12 @@
       font-size: 18px;
       cursor: pointer;
     }
-    /* === Call Controls for Mobile (Mute, Camera Off, Rotate) === */
+    /* === Call Controls for Mobile === */
     .call-controls {
       display: none;
     }
     @media (max-width: 600px) {
-        aside.contacts button {
+      aside.contacts button {
             font-size: 10px;
         width: 100%;
         margin-top: 10px;
@@ -357,6 +365,10 @@
         cursor: pointer;
         }
         aside.contacts h3 { font-size: 10px; margin-bottom: 10px; text-align: center; }
+      /* Fullscreen modal for mobile */
+      .modal { padding: 0; }
+      .modal-content { height: 100%; }
+      /* Mobile call controls (shown at bottom) */
       .call-controls {
         display: flex;
         justify-content: space-around;
@@ -376,13 +388,10 @@
         height: 50px;
         font-size: 12px;
       }
-      /* Make call modal fully full-screen on mobile */
-      .modal { padding: 0; }
-      .modal-content { height: 100%; }
       /* Adjust contact list for mobile: horizontal circular icons */
       aside.contacts {
         width: 100%;
-        height: 100%;
+        height: auto;
         border-right: none;
         border-bottom: 1px solid #ccc;
         display: flex;
@@ -396,7 +405,7 @@
         flex: 0 0 auto;
         margin: 5px;
         display: flex;
-        flex-direction: row;
+        flex-direction: column;
         align-items: center;
       }
       aside.contacts li img {
@@ -447,9 +456,9 @@
   <div id="appSection" class="app-section">
     <header class="header">
       <h1>লাইভ ভিডিও &amp; চ্যাট</h1>
-      <!-- Profile Button: যদি প্রোফাইল ছবি থাকে, তা দেখাবে -->
+      <!-- Profile Button -->
       <button id="profileBtn" class="profile-btn" title="প্রোফাইল আপডেট করুন">PN</button>
-      <!-- Profile Popover (পপওভার বাটনের পাশে) -->
+      <!-- Profile Popover -->
       <div id="profilePopover" class="profile-popover">
         <h3>প্রোফাইল আপডেট</h3>
         <label for="tempName">সাময়িক নাম:</label>
@@ -463,7 +472,7 @@
       </div>
     </header>
     <div class="main">
-      <!-- Sidebar: Contacts (Desktop) / Horizontal list (Mobile) -->
+      <!-- Sidebar: Contacts -->
       <aside class="contacts">
         <h3>কন্টাক্ট</h3>
         <ul id="contactList"></ul>
@@ -529,6 +538,7 @@
     let currentConversation = null;
     let localStream = null;
     let currentCall = null;
+    let incomingCallTimer = null; // for auto-decline
 
     /***** DOM Elements *****/
     const loginSection = document.getElementById('loginSection');
@@ -573,34 +583,22 @@
     const rotateBtn = document.getElementById('rotateBtn');
 
     /***** Utility Functions *****/
-    function getConversationId(participants) {
-      return participants.sort().join('_');
-    }
-    function saveConversations() {
-      localStorage.setItem('conversations', JSON.stringify(conversations));
-    }
+    function getConversationId(participants) { return participants.sort().join('_'); }
+    function saveConversations() { localStorage.setItem('conversations', JSON.stringify(conversations)); }
     function appendMessage(convoId, sender, msgObj) {
       if (!conversations[convoId]) conversations[convoId] = [];
       conversations[convoId].push(msgObj);
       saveConversations();
-      if (currentConversation && currentConversation.id === convoId) {
-        displayMessage(msgObj);
-      }
+      if (currentConversation && currentConversation.id === convoId) { displayMessage(msgObj); }
     }
     function displayMessage(msg) {
       const msgDiv = document.createElement('div');
       msgDiv.classList.add('message');
       let avatarHTML = "";
-      if(msg.sender === username && profilePicData) {
-        avatarHTML = `<img class="avatar" src="${profilePicData}" alt="Avatar">`;
-      }
-      if(msg.sender === username) {
-        msgDiv.classList.add('self');
-      } else if(msg.type === 'system') {
-        msgDiv.classList.add('system');
-      } else {
-        msgDiv.classList.add('peer');
-      }
+      if(msg.sender === username && profilePicData) { avatarHTML = `<img class="avatar" src="${profilePicData}" alt="Avatar">`; }
+      if(msg.sender === username) { msgDiv.classList.add('self'); }
+      else if(msg.type === 'system') { msgDiv.classList.add('system'); }
+      else { msgDiv.classList.add('peer'); }
       if(msg.type === 'file') {
         if(msg.fileType.startsWith("image/")) {
           msgDiv.innerHTML = `${avatarHTML}<div><strong>${msg.sender}</strong> (${msg.time}):<br>
@@ -639,16 +637,13 @@
     function loadSavedProfile() {
       const savedName = localStorage.getItem(userRole + '_username');
       const savedPic = localStorage.getItem(userRole + '_profilePicData');
-      if(savedName) username = savedName;
-      if(savedPic) profilePicData = savedPic;
+      if(savedName) { username = savedName; }
+      if(savedPic) { profilePicData = savedPic; }
       updateProfileButton();
     }
     function updateProfileButton() {
-      if(profilePicData) {
-        profileBtn.innerHTML = `<img src="${profilePicData}" alt="Avatar" style="width:30px;height:30px;border-radius:50%;object-fit:cover;">`;
-      } else {
-        profileBtn.textContent = "PN";
-      }
+      if(profilePicData) { profileBtn.innerHTML = `<img src="${profilePicData}" alt="Avatar" style="width:30px;height:30px;border-radius:50%;object-fit:cover;">`; }
+      else { profileBtn.textContent = "PN"; }
     }
     function saveLoginData() {
       localStorage.setItem('loggedIn', 'true');
@@ -664,6 +659,19 @@
       }
     }
 
+    /***** Online/Offline Status for Contacts *****/
+    function updateContactStatus() {
+      const lis = document.querySelectorAll('aside.contacts li');
+      lis.forEach(li => {
+        const contactName = li.getAttribute('data-contact');
+        const statusSpan = li.querySelector('.status');
+        if(getConnection(contactName) && getConnection(contactName).open) {
+          statusSpan.style.background = "green";
+        } else { statusSpan.style.background = "red"; }
+      });
+    }
+    setInterval(updateContactStatus, 5000); // update every 5 seconds
+
     /***** Login & PeerJS Initialization *****/
     loginButton.addEventListener('click', () => {
       const selectedAccount = accountSelect.value;
@@ -671,7 +679,7 @@
       if(pwd !== selectedAccount) { alert("ভুল পাসওয়ার্ড!"); return; }
       userRole = selectedAccount;
       loadSavedProfile();
-      if(!username) username = selectedAccount;
+      if(!username) { username = selectedAccount; }
       saveLoginData();
       peer = new Peer(userRole, { debug: 2 });
       peer.on('error', err => {
@@ -728,8 +736,8 @@
       allAccounts.forEach(acc => {
         if(acc === userRole) return;
         const li = document.createElement('li');
-        // For mobile, include a span with the account name below the avatar
-        li.innerHTML = `<img src="" alt="Avatar" onerror="this.style.display='none'"><span>${acc}</span>`;
+        li.setAttribute('data-contact', acc);
+        li.innerHTML = `<img src="" alt="Avatar" onerror="this.style.display='none'"><span>${acc}</span><span class="status"></span>`;
         li.addEventListener('click', () => {
           const convoId = getConversationId([userRole, acc]);
           currentConversation = { id: convoId, participants: [acc] };
@@ -737,9 +745,7 @@
           document.querySelectorAll('aside.contacts li').forEach(item => item.classList.remove('active'));
           li.classList.add('active');
           clearChatMessages();
-          if(conversations[convoId]) {
-            conversations[convoId].forEach(m => displayMessage(m));
-          }
+          if(conversations[convoId]) { conversations[convoId].forEach(m => displayMessage(m)); }
         });
         contactListEl.appendChild(li);
       });
@@ -753,9 +759,7 @@
       currentConversation = { id: convoId, participants: members };
       chatWithEl.textContent = "গ্রুপ: " + members.join(', ');
       clearChatMessages();
-      if(conversations[convoId]) {
-        conversations[convoId].forEach(m => displayMessage(m));
-      }
+      if(conversations[convoId]) { conversations[convoId].forEach(m => displayMessage(m)); }
     });
 
     /***** Chat Message Functions *****/
@@ -849,11 +853,17 @@
         });
       }
     }
-    // Incoming call handler: Receiver sees a modal with Accept/Decline
+    // Incoming call handler with vibration and auto-decline timer
     function incomingCallHandler(call) {
       currentCall = call;
+      if(navigator.vibrate) { navigator.vibrate([200, 100, 200]); }
       incomingCallModal.style.display = "block";
+      // Auto-decline after 15 seconds if no action
+      incomingCallTimer = setTimeout(() => {
+        declineCallBtn.click();
+      }, 15000);
       acceptCallBtn.onclick = () => {
+        clearTimeout(incomingCallTimer);
         const constraints = (call.metadata && call.metadata.type === "audio") ? { audio: true } : { video: true, audio: true };
         navigator.mediaDevices.getUserMedia(constraints)
           .then(stream => {
@@ -867,11 +877,12 @@
           .catch(err => { console.error("মিডিয়া এক্সেস সমস্যাঃ", err); });
       };
       declineCallBtn.onclick = () => {
-        const msgObj = { conversationId: call.metadata.conversationId || "", type: "callRequest" };
+        clearTimeout(incomingCallTimer);
+        const msgObj = { conversationId: call.metadata.conversationId || "", type: "callRequest", text: "Missed Call at " + new Date().toLocaleTimeString() };
         const conn = getConnection(call.peer);
         if(conn && conn.open) { conn.send(JSON.stringify(msgObj)); }
         incomingCallModal.style.display = "none";
-        showNotification("Call Ended");
+        showNotification("Missed Call");
       };
     }
     /* Call Controls for Mobile */
@@ -892,7 +903,6 @@
       }
     });
     rotateBtn.addEventListener('click', () => {
-      // একটি সহজ রোটেট ফাংশন, এখানে 90 ডিগ্রি রোটেট করা হচ্ছে
       const currRotation = localVideo.getAttribute('data-rotation') || 0;
       const newRotation = (parseInt(currRotation) + 90) % 360;
       localVideo.style.transform = `rotate(${newRotation}deg) scaleX(-1)`;
