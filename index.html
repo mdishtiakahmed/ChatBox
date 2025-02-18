@@ -6,11 +6,7 @@
   <title>লাইভ ভিডিও &amp; চ্যাট</title>
   <style>
     /* === Global Reset & Basic Styles === */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
       background-color: #ece5dd;
@@ -30,10 +26,7 @@
       border-radius: 8px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.2);
     }
-    #loginSection h2 {
-      text-align: center;
-      margin-bottom: 15px;
-    }
+    #loginSection h2 { text-align: center; margin-bottom: 15px; }
     #loginSection label,
     #loginSection select,
     #loginSection input,
@@ -50,15 +43,9 @@
       cursor: pointer;
       border-radius: 4px;
     }
-    #loginSection button:hover {
-      background: #0a7a71;
-    }
+    #loginSection button:hover { background: #0a7a71; }
     /* === Main App Section === */
-    #appSection {
-      display: none;
-      height: 100vh;
-      flex-direction: column;
-    }
+    #appSection { display: none; height: 100vh; flex-direction: column; }
     header.header {
       background-color: #075E54;
       color: #fff;
@@ -68,9 +55,7 @@
       align-items: center;
       position: relative;
     }
-    header.header h1 {
-      font-size: 20px;
-    }
+    header.header h1 { font-size: 20px; }
     /* === Profile Button & Popover === */
     .profile-btn {
       background: #fff;
@@ -81,7 +66,9 @@
       cursor: pointer;
       font-weight: bold;
       position: relative;
+      transition: box-shadow 0.3s;
     }
+    .profile-btn:hover { box-shadow: 0 0 8px rgba(0,0,0,0.3); }
     .profile-popover {
       display: none;
       position: absolute;
@@ -94,17 +81,10 @@
       width: 250px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.2);
       z-index: 12000;
+      animation: fadeIn 0.3s ease;
     }
-    .profile-popover h3 {
-      margin-bottom: 10px;
-      font-size: 18px;
-      text-align: center;
-    }
-    .profile-popover label {
-      display: block;
-      margin: 8px 0 4px;
-      font-size: 14px;
-    }
+    .profile-popover h3 { margin-bottom: 10px; font-size: 18px; text-align: center; }
+    .profile-popover label { display: block; margin: 8px 0 4px; font-size: 14px; }
     .profile-popover input[type="text"],
     .profile-popover input[type="file"],
     .profile-popover input[type="password"] {
@@ -125,11 +105,8 @@
       margin-top: 5px;
     }
     /* === Main Layout: Sidebar & Chat Area === */
-    .main {
-      flex: 1;
-      display: flex;
-      overflow: hidden;
-    }
+    .main { flex: 1; display: flex; overflow: hidden; }
+    /* Desktop Contacts (Sidebar) */
     aside.contacts {
       width: 250px;
       background: #f0f0f0;
@@ -137,14 +114,8 @@
       overflow-y: auto;
       padding: 10px;
     }
-    aside.contacts h3 {
-      margin-bottom: 10px;
-      text-align: center;
-    }
-    aside.contacts ul {
-      list-style: none;
-      padding: 0;
-    }
+    aside.contacts h3 {margin-bottom: 10px; text-align: center; }
+    aside.contacts ul { list-style: none; padding: 0; }
     aside.contacts li {
       padding: 10px;
       margin: 5px 0;
@@ -156,9 +127,7 @@
       align-items: center;
     }
     aside.contacts li:hover,
-    aside.contacts li.active {
-      background: #d0f0d0;
-    }
+    aside.contacts li.active { background: #d0f0d0; }
     aside.contacts li img {
       width: 40px;
       height: 40px;
@@ -202,11 +171,7 @@
       cursor: pointer;
       font-size: 14px;
     }
-    .chat-messages {
-      flex: 1;
-      overflow-y: auto;
-      padding: 10px;
-    }
+    .chat-messages { flex: 1; overflow-y: auto; padding: 10px; }
     .message {
       margin: 8px 0;
       max-width: 70%;
@@ -243,10 +208,7 @@
       margin-right: 8px;
       object-fit: cover;
     }
-    .message.self img.avatar {
-      margin-left: 8px;
-      margin-right: 0;
-    }
+    .message.self img.avatar { margin-left: 8px; margin-right: 0; }
     /* === Chat Input Area === */
     .chat-input-container {
       display: flex;
@@ -295,11 +257,9 @@
       padding: 20px;
       width: 300px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      animation: fadeIn 0.3s ease;
     }
-    .incoming-call-modal h3 {
-      margin-bottom: 15px;
-      text-align: center;
-    }
+    .incoming-call-modal h3 { margin-bottom: 15px; text-align: center; }
     .incoming-call-modal button {
       width: 45%;
       padding: 8px;
@@ -309,14 +269,8 @@
       cursor: pointer;
       font-size: 14px;
     }
-    .incoming-call-modal .accept {
-      background: #34B7F1;
-      color: #fff;
-    }
-    .incoming-call-modal .decline {
-      background: #d9534f;
-      color: #fff;
-    }
+    .incoming-call-modal .accept { background: #34B7F1; color: #fff; }
+    .incoming-call-modal .decline { background: #d9534f; color: #fff; }
     /* === Call Modal (Active Call) === */
     .modal {
       display: none;
@@ -348,7 +302,7 @@
       cursor: pointer;
       z-index: 12000;
     }
-    /* Video Container: Remote video fills container; Local video small & floating */
+    /* === Video Container === */
     .video-container {
       position: relative;
       width: 90%;
@@ -362,6 +316,7 @@
       height: auto;
       background: #000;
     }
+    /* Local video: mirror effect, small and floating (upper part) */
     #localVideo {
       position: absolute;
       top: 10px;
@@ -370,9 +325,9 @@
       height: auto;
       border: 2px solid #fff;
       border-radius: 4px;
+      transform: scaleX(-1);
       z-index: 5;
       cursor: move;
-      /* একটি হালকা শ্যাডো */
       box-shadow: 0 2px 6px rgba(0,0,0,0.5);
     }
     .call-end-btn {
@@ -385,54 +340,82 @@
       font-size: 18px;
       cursor: pointer;
     }
-    /* === Mobile Adjustments === */
+    /* === Call Controls for Mobile (Mute, Camera Off, Rotate) === */
+    .call-controls {
+      display: none;
+    }
     @media (max-width: 600px) {
-      /* কন্টাক্ট লিস্টকে Messenger-এর মতো উপরের দিকে, গোল ছবি দিয়ে */
+        aside.contacts button {
+            font-size: 10px;
+        width: 100%;
+        margin-top: 10px;
+        padding: 8px;
+        background: #075E54;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        }
+        aside.contacts h3 { font-size: 10px; margin-bottom: 10px; text-align: center; }
+      .call-controls {
+        display: flex;
+        justify-content: space-around;
+        width: 100%;
+        background: rgba(0,0,0,0.5);
+        padding: 10px 0;
+        position: absolute;
+        bottom: 0;
+      }
+      .call-controls button {
+        background: #075E54;
+        border: none;
+        color: #fff;
+        padding: 10px;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        font-size: 12px;
+      }
+      /* Make call modal fully full-screen on mobile */
+      .modal { padding: 0; }
+      .modal-content { height: 100%; }
+      /* Adjust contact list for mobile: horizontal circular icons */
       aside.contacts {
         width: 100%;
-        height: auto;
+        height: 100%;
         border-right: none;
         border-bottom: 1px solid #ccc;
         display: flex;
-        flex-direction: row;
+        flex-direction: column;
         overflow-x: auto;
         white-space: nowrap;
         padding: 5px;
       }
-      aside.contacts ul {
-        display: flex;
-        flex-direction: row;
-      }
+      aside.contacts ul { display: flex; flex-direction: column; }
       aside.contacts li {
         flex: 0 0 auto;
-        margin-right: 10px;
-        padding: 5px;
+        margin: 5px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
       }
       aside.contacts li img {
-        width: 50px;
-        height: 50px;
+        width: 60px;
+        height: 60px;
         border-radius: 50%;
       }
-      header.header h1 {
-        font-size: 18px;
+      aside.contacts li span {
+        font-size: 7px;
+        margin-top: 5px;
       }
-      .profile-btn {
-        padding: 6px 10px;
-      }
-      #localVideo {
-        width: 120px;
-      }
-      .chat-input-container input[type="text"] {
-        font-size: 14px;
-      }
+      header.header h1 { font-size: 18px; }
+      .profile-btn { padding: 6px 10px; }
+      #localVideo { width: 120px; }
+      .chat-input-container input[type="text"] { font-size: 14px; }
       .chat-input-container .send-btn,
-      .chat-input-container #fileBtn {
-        font-size: 12px;
-        padding: 6px 8px;
-      }
+      .chat-input-container #fileBtn { font-size: 12px; padding: 6px 8px; }
     }
     /* === Elegant Touch === */
-    /* সামান্য এনিমেশন ও শ্যাডো যোগ করা হয়েছে */
     .profile-popover, .incoming-call-modal, .modal-content {
       animation: fadeIn 0.3s ease;
     }
@@ -466,7 +449,7 @@
       <h1>লাইভ ভিডিও &amp; চ্যাট</h1>
       <!-- Profile Button: যদি প্রোফাইল ছবি থাকে, তা দেখাবে -->
       <button id="profileBtn" class="profile-btn" title="প্রোফাইল আপডেট করুন">PN</button>
-      <!-- Profile Popover -->
+      <!-- Profile Popover (পপওভার বাটনের পাশে) -->
       <div id="profilePopover" class="profile-popover">
         <h3>প্রোফাইল আপডেট</h3>
         <label for="tempName">সাময়িক নাম:</label>
@@ -480,11 +463,11 @@
       </div>
     </header>
     <div class="main">
-      <!-- Sidebar: Contacts -->
+      <!-- Sidebar: Contacts (Desktop) / Horizontal list (Mobile) -->
       <aside class="contacts">
         <h3>কন্টাক্ট</h3>
         <ul id="contactList"></ul>
-        <button id="createGroupBtn">নতুন গ্রুপ চ্যাট</button>
+        <button id="createGroupBtn">নতুন গ্রুপ</button>
       </aside>
       <!-- Chat Area -->
       <section class="chat-section">
@@ -522,6 +505,12 @@
       <div class="video-container" id="videoContainer">
         <video id="remoteVideo" autoplay></video>
         <video id="localVideo" autoplay muted></video>
+      </div>
+      <!-- Mobile Call Controls -->
+      <div class="call-controls">
+        <button id="muteBtn" title="Mute">Mute</button>
+        <button id="cameraOffBtn" title="Camera Off">Cam Off</button>
+        <button id="rotateBtn" title="Rotate">Rotate</button>
       </div>
       <button id="endCallBtn" class="call-end-btn">কল শেষ করুন</button>
     </div>
@@ -579,6 +568,10 @@
     const acceptCallBtn = document.getElementById('acceptCallBtn');
     const declineCallBtn = document.getElementById('declineCallBtn');
 
+    const muteBtn = document.getElementById('muteBtn');
+    const cameraOffBtn = document.getElementById('cameraOffBtn');
+    const rotateBtn = document.getElementById('rotateBtn');
+
     /***** Utility Functions *****/
     function getConversationId(participants) {
       return participants.sort().join('_');
@@ -624,11 +617,8 @@
       chatMessagesEl.appendChild(msgDiv);
       chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
     }
-    function clearChatMessages() {
-      chatMessagesEl.innerHTML = "";
-    }
+    function clearChatMessages() { chatMessagesEl.innerHTML = ""; }
     function showNotification(text) {
-      // একটি সহজ নোটিফিকেশন এলিমেন্ট তৈরি করে 2 সেকেন্ড পরে অটো হাইড করা হবে
       const notif = document.createElement('div');
       notif.style.position = "fixed";
       notif.style.bottom = "20px";
@@ -641,13 +631,9 @@
       notif.style.boxShadow = "0 2px 6px rgba(0,0,0,0.3)";
       notif.textContent = text;
       document.body.appendChild(notif);
-      setTimeout(() => {
-        notif.remove();
-      }, 2000);
+      setTimeout(() => { notif.remove(); }, 2000);
     }
-    function toggleTheme() {
-      document.body.classList.toggle('dark-theme');
-    }
+    function toggleTheme() { document.body.classList.toggle('dark-theme'); }
 
     /***** Load Saved Data *****/
     function loadSavedProfile() {
@@ -665,7 +651,6 @@
       }
     }
     function saveLoginData() {
-      // লগইন সংক্রান্ত তথ্য সংরক্ষিত থাকবে যাতে পরবর্তীতে আবার লগইন করতে না হয়
       localStorage.setItem('loggedIn', 'true');
       localStorage.setItem('loggedAccount', userRole);
     }
@@ -674,7 +659,6 @@
       const acc = localStorage.getItem('loggedAccount');
       if(logged && acc) {
         accountSelect.value = acc;
-        // নিজে থেকে লগইন করার জন্য (পাসওয়ার্ড আবার না চাইলে)
         passwordInput.value = acc;
         loginButton.click();
       }
@@ -684,10 +668,7 @@
     loginButton.addEventListener('click', () => {
       const selectedAccount = accountSelect.value;
       const pwd = passwordInput.value.trim();
-      if(pwd !== selectedAccount) {
-        alert("ভুল পাসওয়ার্ড!");
-        return;
-      }
+      if(pwd !== selectedAccount) { alert("ভুল পাসওয়ার্ড!"); return; }
       userRole = selectedAccount;
       loadSavedProfile();
       if(!username) username = selectedAccount;
@@ -697,9 +678,7 @@
         if(err.type === 'unavailable-id'){
           alert("এই একাউন্টে ইতোমধ্যে লগইন আছে!");
           peer.destroy();
-        } else {
-          console.error(err);
-        }
+        } else { console.error(err); }
       });
       peer.on('open', id => {
         console.log("Peer ID:", id);
@@ -707,31 +686,22 @@
         appSection.style.display = "flex";
         initializeContacts();
       });
-      peer.on('connection', conn => {
-        setupConnection(conn);
-      });
-      peer.on('call', call => {
-        // incoming call: show incoming call modal with accept/decline options
-        incomingCallHandler(call);
-      });
+      peer.on('connection', conn => { setupConnection(conn); });
+      peer.on('call', call => { incomingCallHandler(call); });
     });
 
     /***** Connection Setup *****/
     function setupConnection(conn) {
-      conn.on('open', () => {
-        console.log("Connected with", conn.peer);
-      });
+      conn.on('open', () => { console.log("Connected with", conn.peer); });
       conn.on('data', data => {
         try {
           const msgObj = JSON.parse(data);
           if(msgObj.type === "callEnded") {
-            // যদি কল শেষের সিগন্যাল পাওয়া যায়, তাহলে কল শেষ করুন
             endCall();
             showNotification("Call Ended");
             return;
           }
           if(msgObj.type === "callRequest") {
-            // এই সিগন্যাল পাঠাবে কল ডিক্লাইন করার ক্ষেত্রে
             showNotification("Call In Date");
             return;
           }
@@ -739,13 +709,9 @@
             msgObj.conversationId = getConversationId([msgObj.sender, username]);
           }
           appendMessage(msgObj.conversationId, msgObj.sender, msgObj);
-        } catch(e) {
-          console.error("Invalid message format", e);
-        }
+        } catch(e) { console.error("Invalid message format", e); }
       });
-      conn.on('error', err => {
-        console.error("Connection error:", err);
-      });
+      conn.on('error', err => { console.error("Connection error:", err); });
       connections[conn.peer] = conn;
     }
     function getConnection(peerId) {
@@ -762,7 +728,8 @@
       allAccounts.forEach(acc => {
         if(acc === userRole) return;
         const li = document.createElement('li');
-        li.innerHTML = `<img src="" alt="Avatar" onerror="this.style.display='none'"> ${acc}`;
+        // For mobile, include a span with the account name below the avatar
+        li.innerHTML = `<img src="" alt="Avatar" onerror="this.style.display='none'"><span>${acc}</span>`;
         li.addEventListener('click', () => {
           const convoId = getConversationId([userRole, acc]);
           currentConversation = { id: convoId, participants: [acc] };
@@ -781,10 +748,7 @@
       const input = prompt("গ্রুপে কারা থাকবে? (কমা দিয়ে আলাদা করে লিখুন, যেমন: account2,account3)");
       if(!input) return;
       const members = input.split(',').map(s => s.trim()).filter(s => s && s !== userRole);
-      if(members.length < 1) {
-        alert("কমপক্ষে একজন অন্য সদস্য আবশ্যক!");
-        return;
-      }
+      if(members.length < 1) { alert("কমপক্ষে একজন অন্য সদস্য আবশ্যক!"); return; }
       const convoId = "group_" + getConversationId([userRole, ...members]);
       currentConversation = { id: convoId, participants: members };
       chatWithEl.textContent = "গ্রুপ: " + members.join(', ');
@@ -796,9 +760,7 @@
 
     /***** Chat Message Functions *****/
     sendChatBtn.addEventListener('click', sendChatMessage);
-    chatInput.addEventListener('keypress', (e) => {
-      if(e.key === 'Enter') sendChatMessage();
-    });
+    chatInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') sendChatMessage(); });
     function sendChatMessage() {
       const text = chatInput.value.trim();
       if(text === "" || !currentConversation) return;
@@ -807,15 +769,11 @@
       appendMessage(currentConversation.id, username, msgObj);
       currentConversation.participants.forEach(peerId => {
         const conn = getConnection(peerId);
-        if(conn && conn.open) {
-          conn.send(JSON.stringify(msgObj));
-        }
+        if(conn && conn.open) { conn.send(JSON.stringify(msgObj)); }
       });
       chatInput.value = "";
     }
-    fileBtn.addEventListener('click', () => {
-      fileInput.click();
-    });
+    fileBtn.addEventListener('click', () => { fileInput.click(); });
     fileInput.addEventListener('change', () => {
       const file = fileInput.files[0];
       if(!file || !currentConversation) return;
@@ -835,9 +793,7 @@
         appendMessage(currentConversation.id, username, msgObj);
         currentConversation.participants.forEach(peerId => {
           const conn = getConnection(peerId);
-          if(conn && conn.open) {
-            conn.send(JSON.stringify(msgObj));
-          }
+          if(conn && conn.open) { conn.send(JSON.stringify(msgObj)); }
         });
       };
       reader.readAsDataURL(file);
@@ -857,65 +813,46 @@
           localStream = stream;
           localVideo.srcObject = stream;
           openCallModal();
-          // মোবাইলে অটো ফুলস্ক্রিন
           if(window.innerWidth < 600 && callModal.requestFullscreen) {
             callModal.requestFullscreen().catch(err => console.log(err));
           }
           currentConversation.participants.forEach(peerId => {
             const call = peer.call(peerId, stream, { metadata: { type: callType, conversationId: currentConversation.id } });
-            call.on('stream', remoteStream => {
-              remoteVideo.srcObject = remoteStream;
-            });
+            call.on('stream', remoteStream => { remoteVideo.srcObject = remoteStream; });
             currentCall = call;
           });
         })
-        .catch(err => {
-          console.error("মিডিয়া এক্সেস সমস্যাঃ", err);
-        });
+        .catch(err => { console.error("মিডিয়া এক্সেস সমস্যাঃ", err); });
     }
     videoCallBtn.addEventListener('click', () => startCall(true));
     audioCallBtn.addEventListener('click', () => startCall(false));
-    function openCallModal() {
-      callModal.style.display = "block";
-    }
+    function openCallModal() { callModal.style.display = "block"; }
     function closeCallModalFunc() {
       callModal.style.display = "none";
       endCall();
-      if(document.fullscreenElement) {
-        document.exitFullscreen();
-      }
+      if(document.fullscreenElement) { document.exitFullscreen(); }
       broadcastCallEnd();
       showNotification("Call Ended");
     }
     closeCallModal.addEventListener('click', closeCallModalFunc);
     endCallBtn.addEventListener('click', closeCallModalFunc);
     function endCall() {
-      if(localStream) {
-        localStream.getTracks().forEach(track => track.stop());
-        localStream = null;
-      }
-      if(currentCall) {
-        currentCall.close();
-        currentCall = null;
-      }
+      if(localStream) { localStream.getTracks().forEach(track => track.stop()); localStream = null; }
+      if(currentCall) { currentCall.close(); currentCall = null; }
     }
     function broadcastCallEnd() {
       if(currentConversation) {
         const msgObj = { conversationId: currentConversation.id, type: "callEnded" };
         currentConversation.participants.forEach(peerId => {
           const conn = getConnection(peerId);
-          if(conn && conn.open) {
-            conn.send(JSON.stringify(msgObj));
-          }
+          if(conn && conn.open) { conn.send(JSON.stringify(msgObj)); }
         });
       }
     }
-    // Incoming call handler: রিসিভার পাশে একটি পপআপ দেখাবে Accept/Decline অপশন
+    // Incoming call handler: Receiver sees a modal with Accept/Decline
     function incomingCallHandler(call) {
       currentCall = call;
-      // Show incoming call modal
       incomingCallModal.style.display = "block";
-      // Accept
       acceptCallBtn.onclick = () => {
         const constraints = (call.metadata && call.metadata.type === "audio") ? { audio: true } : { video: true, audio: true };
         navigator.mediaDevices.getUserMedia(constraints)
@@ -925,44 +862,54 @@
             call.answer(stream);
             incomingCallModal.style.display = "none";
             openCallModal();
-            call.on('stream', remoteStream => {
-              remoteVideo.srcObject = remoteStream;
-            });
+            call.on('stream', remoteStream => { remoteVideo.srcObject = remoteStream; });
           })
-          .catch(err => {
-            console.error("মিডিয়া এক্সেস সমস্যাঃ", err);
-          });
+          .catch(err => { console.error("মিডিয়া এক্সেস সমস্যাঃ", err); });
       };
-      // Decline
       declineCallBtn.onclick = () => {
-        // Send decline signal to caller
         const msgObj = { conversationId: call.metadata.conversationId || "", type: "callRequest" };
         const conn = getConnection(call.peer);
-        if(conn && conn.open) {
-          conn.send(JSON.stringify(msgObj));
-        }
+        if(conn && conn.open) { conn.send(JSON.stringify(msgObj)); }
         incomingCallModal.style.display = "none";
         showNotification("Call Ended");
       };
     }
+    /* Call Controls for Mobile */
+    muteBtn.addEventListener('click', () => {
+      if(localStream) {
+        localStream.getAudioTracks().forEach(track => {
+          track.enabled = !track.enabled;
+          muteBtn.textContent = track.enabled ? "Mute" : "Unmute";
+        });
+      }
+    });
+    cameraOffBtn.addEventListener('click', () => {
+      if(localStream) {
+        localStream.getVideoTracks().forEach(track => {
+          track.enabled = !track.enabled;
+          cameraOffBtn.textContent = track.enabled ? "Cam Off" : "Cam On";
+        });
+      }
+    });
+    rotateBtn.addEventListener('click', () => {
+      // একটি সহজ রোটেট ফাংশন, এখানে 90 ডিগ্রি রোটেট করা হচ্ছে
+      const currRotation = localVideo.getAttribute('data-rotation') || 0;
+      const newRotation = (parseInt(currRotation) + 90) % 360;
+      localVideo.style.transform = `rotate(${newRotation}deg) scaleX(-1)`;
+      localVideo.setAttribute('data-rotation', newRotation);
+    });
 
     /***** Profile Popover Functions *****/
     profileBtn.addEventListener('click', (e) => {
-      // Toggle profile popover
       profilePopover.style.display = (profilePopover.style.display === "block") ? "none" : "block";
       tempNameInput.value = username;
       e.stopPropagation();
     });
     profilePopover.addEventListener('click', e => e.stopPropagation());
-    document.addEventListener('click', () => {
-      profilePopover.style.display = "none";
-    });
+    document.addEventListener('click', () => { profilePopover.style.display = "none"; });
     saveProfileBtn.addEventListener('click', () => {
       const newName = tempNameInput.value.trim();
-      if(newName) {
-        username = newName;
-        localStorage.setItem(userRole + '_username', username);
-      }
+      if(newName) { username = newName; localStorage.setItem(userRole + '_username', username); }
       if(profilePicInput.files && profilePicInput.files[0]) {
         const file = profilePicInput.files[0];
         const reader = new FileReader();
@@ -971,20 +918,15 @@
           localStorage.setItem(userRole + '_profilePicData', profilePicData);
           updateProfileButton();
           profilePopover.style.display = "none";
-          // Update avatars in contact list if needed
         };
         reader.readAsDataURL(file);
-      } else {
-        profilePopover.style.display = "none";
-      }
-      // পাসওয়ার্ড পরিবর্তনের জন্য (সরাসরি সেভ করা, উদাহরণ স্বরূপ)
+      } else { profilePopover.style.display = "none"; }
       if(newPasswordInput.value.trim()) {
         localStorage.setItem(userRole + '_password', newPasswordInput.value.trim());
         newPasswordInput.value = "";
       }
     });
     logoutBtn.addEventListener('click', () => {
-      // Clear লগইন তথ্য ও রিলোড পেজ
       localStorage.removeItem('loggedIn');
       localStorage.removeItem('loggedAccount');
       location.reload();
@@ -992,18 +934,12 @@
 
     /***** Theme Persistence *****/
     const savedTheme = localStorage.getItem('theme');
-    if(savedTheme === 'dark') {
-      document.body.classList.add('dark-theme');
-    }
+    if(savedTheme === 'dark') { document.body.classList.add('dark-theme'); }
     function toggleAndSaveTheme() {
       document.body.classList.toggle('dark-theme');
-      if(document.body.classList.contains('dark-theme')) {
-        localStorage.setItem('theme', 'dark');
-      } else {
-        localStorage.setItem('theme', 'light');
-      }
+      if(document.body.classList.contains('dark-theme')) { localStorage.setItem('theme', 'dark'); }
+      else { localStorage.setItem('theme', 'light'); }
     }
-    // ডবল-ক্লিকে থিম পরিবর্তন
     profileBtn.addEventListener('dblclick', toggleAndSaveTheme);
 
     /***** Auto-Login *****/
